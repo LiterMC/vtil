@@ -78,8 +78,6 @@ public final class AssembleApi {
 		final List<Pair<BlockPos, BlockState>> blockStates = new ArrayList<>(blocks.size());
 		final List<Entity> entities = new ArrayList<>();
 
-		ship.setSlug(null);
-
 		// get attachable entities
 		for (final Entity entity : level.getEntities(null, new AABB(blocksBox.minX - 1, blocksBox.minY - 1, blocksBox.minZ - 1, blocksBox.maxX + 2, blocksBox.maxY + 2, blocksBox.maxZ + 2))) {
 			if (entity instanceof final HangingEntity he) {
@@ -149,6 +147,7 @@ public final class AssembleApi {
 
 		if (blockStates.isEmpty()) {
 			// No block present
+			shipWorld.deleteShip(ship);
 			return null;
 		}
 

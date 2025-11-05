@@ -10,7 +10,8 @@
 		"create.MixinControlledContraptionEntity",
 		"create.MixinKineticBlockEntity",
 		"create.MixinLinearActuatorBlockEntity",
-		"create.MixinMechanicalBearingBlockEntity"
+		"create.MixinMechanicalBearingBlockEntity",
+		"minecraft.MixinBlockBehaviour"
 	],
 	"client": [
 	],
