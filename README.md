@@ -14,7 +14,7 @@ Current API includes:
    - `/vtil assemble` command
 - Connectivity API
    - Provides extra information about block connectivity on ships, which can then be used in Assembly and/or ship split.
-   - By default wraps vanilla `canSurvive`, mod makers can implement `IBlockAnchor` and define their own block connection.
+   - By default wraps vanilla `canSurvive`, mod makers can implement `IBlockAnchor` on their blocks to define their own block connections.
 - Teleport API
    - Teleport valkyrien ships to another dimension with conserved velocity and omega.
    - Teleport an entity and its passengers all together to another dimension, with extra mod compatibility.
