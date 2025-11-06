@@ -166,6 +166,9 @@ public abstract class AbstractAssemblerBlockEntity extends BlockEntity {
 	}
 
 	protected void addAssemblingBlock(final BlockPos pos) {
+		if (BlockConnectivityApi.isAir(this.getLevel().getBlockState(pos))) {
+			return;
+		}
 		this.blocks.add(pos);
 		for (final BlockPos p : this.queryNextBlocks(pos)) {
 			final BlockState targetState = level.getBlockState(p);

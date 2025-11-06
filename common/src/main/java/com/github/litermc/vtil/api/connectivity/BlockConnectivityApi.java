@@ -30,6 +30,26 @@ public final class BlockConnectivityApi {
 	}
 
 	/**
+	 * Get any possible connectable blocks from a block.
+	 * Should not be invoked if {@link isAir} returns {@code true}.
+	 * All results should be add into the result collection.
+	 *
+	 * @param level  World the block is in.
+	 * @param pos    Position of the block.
+	 * @param state  The block state, should not be any air.
+	 * @param result The result holder.
+	 */
+	public static final void getPossibleConnectableBlocks(
+		final LevelAccessor level,
+		final BlockPos pos,
+		final BlockState state,
+		final Collection<BlockPos> result
+	) {
+		final IBlockAnchor anchor = (IBlockAnchor) (state.getBlock());
+		anchor.getConnectableBlocks(level, pos, state, result);
+	}
+
+	/**
 	 * Get all connectable blocks from a block.
 	 * All results should be add into the result collection.
 	 *
@@ -61,11 +81,10 @@ public final class BlockConnectivityApi {
 		final BlockState state,
 		final Collection<BlockPos> result
 	) {
-		final IBlockAnchor anchor = (IBlockAnchor) (state.getBlock());
-		anchor.getConnectableBlocks(level, pos, state, result);
+		getPossibleConnectableBlocks(level, pos, state, result);
 		result.removeIf((p) -> {
 			final BlockState s = level.getBlockState(p);
-			return ((IBlockAnchor) (s.getBlock())).isBlockConnectable(level, p, s, pos, state);
+			return isAir(s) || ((IBlockAnchor) (s.getBlock())).isBlockConnectable(level, p, s, pos, state);
 		});
 	}
 
