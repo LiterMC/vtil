@@ -108,6 +108,7 @@ jobs:
         with:
           repository: LiterMC/maven
           ref: maven
+          ssh-key: ${{ secrets.MAVEN_DEPLOY_PRIVATE_KEY }}
           path: ./maven
       - name: Publish To Maven
         env:
