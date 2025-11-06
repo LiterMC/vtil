@@ -30,13 +30,13 @@ public interface BasicNeighbourBlockAnchor extends IBlockAnchor {
 
 	@Override
 	default boolean isBlockConnectable(
-		LevelAccessor level,
-		BlockPos pos,
-		BlockState state,
-		BlockPos targetPos,
-		BlockState targetState
+		final LevelAccessor level,
+		final BlockPos pos,
+		final BlockState state,
+		final BlockPos targetPos,
+		final BlockState targetState
 	) {
-		return pos.distManhattan(targetPos) == 1 && state.canSurvive(level, targetPos);
+		return pos.distManhattan(targetPos) == 1;
 	}
 
 	@Override

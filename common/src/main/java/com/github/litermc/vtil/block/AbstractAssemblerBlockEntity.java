@@ -91,9 +91,9 @@ public abstract class AbstractAssemblerBlockEntity extends BlockEntity {
 	protected void finishAssemble() {
 		this.setAssembling(false);
 		this.shipSlug = null;
-		this.queueing.clear();
 		this.blocks.clear();
 		this.checked.clear();
+		this.queueing.clear();
 	}
 
 	protected void finishAssembleAsSuccess() {
