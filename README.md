@@ -18,3 +18,26 @@ Current API includes:
 - Teleport API
    - Teleport valkyrien ships to another dimension with conserved velocity and omega.
    - Teleport an entity and its passengers all together to another dimension, with extra mod compatibility.
+
+## How to Use
+
+Add the maven repo:
+```gradle
+maven {
+	name = "LiterMC maven"
+	url = "https://litermc.github.io/maven/"
+	content {
+		includeGroupAndSubgroups("com.github.litermc")
+	}
+}
+```
+
+**Fabric**:
+```gradle
+modImplementation "com.github.litermc.vtil:Vtil-fabric-${minecraft_version}:${vtil_version}"
+```
+
+**Forge**:
+```gradle
+implementation fg.deobf("com.github.litermc.vtil:Vtil-forge-${minecraft_version}:${vtil_version}")
+```

@@ -17,7 +17,7 @@ public class ModEntry implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		VtilRegistry.register();
+		VtilListeners.onModInit();
 		BlockCapabilityProviders.register();
 
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> VtilCommands.register(dispatcher));

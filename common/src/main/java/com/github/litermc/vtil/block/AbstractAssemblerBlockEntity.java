@@ -1,6 +1,7 @@
 package com.github.litermc.vtil.block;
 
 import com.github.litermc.vtil.api.assemble.AssembleApi;
+import com.github.litermc.vtil.api.connectivity.BlockConnectivityApi;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -88,6 +89,7 @@ public abstract class AbstractAssemblerBlockEntity extends BlockEntity {
 	}
 
 	protected void finishAssemble() {
+		this.setAssembling(false);
 		this.shipSlug = null;
 		this.queueing.clear();
 		this.blocks.clear();
@@ -165,8 +167,7 @@ public abstract class AbstractAssemblerBlockEntity extends BlockEntity {
 
 	protected void addAssemblingBlock(final BlockPos pos) {
 		this.blocks.add(pos);
-		for (final Direction dir : Direction.values()) {
-			final BlockPos p = pos.relative(dir);
+		for (final BlockPos p : this.queryNextBlocks(pos)) {
 			final BlockState targetState = level.getBlockState(p);
 			if (level.getBlockEntity(p) instanceof final AbstractAssemblerBlockEntity otherAssembler) {
 				if (this != otherAssembler && otherAssembler.isAssembling()) {
@@ -176,9 +177,15 @@ public abstract class AbstractAssemblerBlockEntity extends BlockEntity {
 				continue;
 			}
 			if (this.checked.add(p.getX(), p.getY(), p.getZ())) {
-				this.queueing.add(p);
+				this.queueing.add(p.immutable());
 			}
 		}
+	}
+
+	protected Iterable<BlockPos> queryNextBlocks(final BlockPos pos) {
+		final Set<BlockPos> result = new HashSet<>(6);
+		BlockConnectivityApi.getConnectableBlocks(this.getLevel(), pos, result);
+		return result;
 	}
 
 	protected ServerShip createShip(final ServerLevel level, final Set<BlockPos> blocks) {

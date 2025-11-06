@@ -63,6 +63,57 @@ public final class BlockConnectivityApi {
 	) {
 		final IBlockAnchor anchor = (IBlockAnchor) (state.getBlock());
 		anchor.getConnectableBlocks(level, pos, state, result);
+		result.removeIf((p) -> {
+			final BlockState s = level.getBlockState(p);
+			return ((IBlockAnchor) (s.getBlock())).isBlockConnectable(level, p, s, pos, state);
+		});
+	}
+
+	/**
+	 * Check if two blocks are connectable.
+	 *
+	 * @param level       World the block is in.
+	 * @param pos         Position of the block.
+	 * @param state       The block state, will never be any air.
+	 * @param targetPos   Position of target block.
+	 * @param targetState Target block state, will never be any air.
+	 */
+	public static final boolean isBlockConnectable(
+		final LevelAccessor level,
+		final BlockPos pos,
+		final BlockPos targetPos
+	) {
+		final BlockState state = level.getBlockState(pos);
+		if (isAir(state)) {
+			return false;
+		}
+		final BlockState targetState = level.getBlockState(targetPos);
+		if (isAir(targetState)) {
+			return false;
+		}
+		return isBlockConnectable(level, pos, state, targetPos, targetState);
+	}
+
+	/**
+	 * Check if two blocks are connectable.
+	 * Should not be invoked if either block is air.
+	 *
+	 * @param level       World the block is in.
+	 * @param pos         Position of the block.
+	 * @param state       The block state, will never be any air.
+	 * @param targetPos   Position of target block.
+	 * @param targetState Target block state, will never be any air.
+	 */
+	public static final boolean isBlockConnectable(
+		final LevelAccessor level,
+		final BlockPos pos,
+		final BlockState state,
+		final BlockPos targetPos,
+		final BlockState targetState
+	) {
+		return
+			((IBlockAnchor) (state.getBlock())).isBlockConnectable(level, pos, state, targetPos, targetState) &&
+			((IBlockAnchor) (targetState.getBlock())).isBlockConnectable(level, targetPos, targetState, pos, state);
 	}
 
 	/**
