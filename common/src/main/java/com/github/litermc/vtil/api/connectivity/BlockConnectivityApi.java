@@ -84,7 +84,7 @@ public final class BlockConnectivityApi {
 		getPossibleConnectableBlocks(level, pos, state, result);
 		result.removeIf((p) -> {
 			final BlockState s = level.getBlockState(p);
-			return isAir(s) || ((IBlockAnchor) (s.getBlock())).isBlockConnectable(level, p, s, pos, state);
+			return isAir(s) || !((IBlockAnchor) (s.getBlock())).isBlockConnectable(level, p, s, pos, state);
 		});
 	}
 
