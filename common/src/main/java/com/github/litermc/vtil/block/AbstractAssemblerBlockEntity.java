@@ -173,7 +173,14 @@ public abstract class AbstractAssemblerBlockEntity extends BlockEntity {
 		for (final BlockPos p : this.queryNextBlocks(pos)) {
 			final BlockState targetState = level.getBlockState(p);
 			if (level.getBlockEntity(p) instanceof final AbstractAssemblerBlockEntity otherAssembler) {
-				if (this != otherAssembler && otherAssembler.isAssembling()) {
+				if (this == otherAssembler) {
+					if (this.getBlockPos().relative(this.facing).equals(pos)) {
+						continue;
+					}
+					this.finishAssembleAsAssembleSelf();
+					return;
+				}
+				if (otherAssembler.isAssembling()) {
 					this.finishAssembleAsConflicts();
 					return;
 				}

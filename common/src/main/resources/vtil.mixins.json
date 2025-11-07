@@ -11,7 +11,18 @@
 		"create.MixinKineticBlockEntity",
 		"create.MixinLinearActuatorBlockEntity",
 		"create.MixinMechanicalBearingBlockEntity",
-		"minecraft.MixinBlockBehaviour"
+		"minecraft.position_based_conn.MixinAttachedStemBlock",
+		"minecraft.position_based_conn.MixinBlockBehaviour",
+		"minecraft.position_based_conn.MixinChainBlock",
+		"minecraft.position_based_conn.MixinDoorBlock",
+		"minecraft.position_based_conn.MixinDoublePlantBlock",
+		"minecraft.position_based_conn.MixinFaceAttachedHorizontalDirectionalBlock",
+		"minecraft.position_based_conn.MixinFenceGateBlock",
+		"minecraft.position_based_conn.MixinOnlyFloorSupportedBlocks",
+		"minecraft.position_based_conn.MixinOnlyNoCeilSupportedBlocks",
+		"minecraft.position_based_conn.MixinOnlyWallSupportedBlocks",
+		"minecraft.position_based_conn.MixinSlabBlock",
+		"minecraft.position_based_conn.MixinTrapDoorBlock"
 	],
 	"client": [
 	],

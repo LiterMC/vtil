@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 
 public final class Constants {
 	public static final String MOD_ID = "vtil";
-	public static final String MOD_NAME = "Vtil";
-	public static final String MOD_VERSION = "0.2.2";
+	public static final String MOD_NAME = "vtil";
+	public static final String MOD_VERSION = "0.2.3";
 	public static final Logger LOG = LoggerFactory.getLogger(MOD_NAME);
 
 	private Constants() {}

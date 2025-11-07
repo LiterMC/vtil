@@ -1,4 +1,4 @@
-package com.github.litermc.vtil.mixin.minecraft;
+package com.github.litermc.vtil.mixin.minecraft.position_based_conn;
 
 import com.github.litermc.vtil.api.connectivity.BasicNeighbourBlockAnchor;
 

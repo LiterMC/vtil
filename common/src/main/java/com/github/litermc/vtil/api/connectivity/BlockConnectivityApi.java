@@ -1,9 +1,11 @@
 package com.github.litermc.vtil.api.connectivity;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.FluidState;
 
 import java.util.Collection;
@@ -14,6 +16,8 @@ public final class BlockConnectivityApi {
 	/**
 	 * Returns if the block is not possible to have any connection.
 	 * E.g. air, flowing liquid.
+	 *
+	 * @param state The block state
 	 * @return {@code true} if the block is not possible to have connection, {@code false} otherwise.
 	 */
 	public static final boolean isAir(final BlockState state) {
@@ -27,6 +31,17 @@ public final class BlockConnectivityApi {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Check if a block contains a fluid source (e.g. water logged).
+	 * If so, then the block may be connected from all direction.
+	 *
+	 * @param state The block state
+	 * @return if a block contains a fluid source.
+	 */
+	public static final boolean isFluidLogged(final BlockState state) {
+		return state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED);
 	}
 
 	/**
@@ -45,6 +60,13 @@ public final class BlockConnectivityApi {
 		final BlockState state,
 		final Collection<BlockPos> result
 	) {
+		if (isFluidLogged(state)) {
+			// TODO: what if getConnectableBlocks provides more than direct neighbors?
+			for (final Direction dir : Direction.values()) {
+				result.add(pos.relative(dir));
+			}
+			return;
+		}
 		final IBlockAnchor anchor = (IBlockAnchor) (state.getBlock());
 		anchor.getConnectableBlocks(level, pos, state, result);
 	}
@@ -84,7 +106,7 @@ public final class BlockConnectivityApi {
 		getPossibleConnectableBlocks(level, pos, state, result);
 		result.removeIf((p) -> {
 			final BlockState s = level.getBlockState(p);
-			return isAir(s) || !((IBlockAnchor) (s.getBlock())).isBlockConnectable(level, p, s, pos, state);
+			return isAir(s) || !isBlockConnectable0(level, p, s, pos, state);
 		});
 	}
 
@@ -131,8 +153,20 @@ public final class BlockConnectivityApi {
 		final BlockState targetState
 	) {
 		return
-			((IBlockAnchor) (state.getBlock())).isBlockConnectable(level, pos, state, targetPos, targetState) &&
-			((IBlockAnchor) (targetState.getBlock())).isBlockConnectable(level, targetPos, targetState, pos, state);
+			isBlockConnectable0(level, pos, state, targetPos, targetState) &&
+			isBlockConnectable0(level, targetPos, targetState, pos, state);
+	}
+
+	private static final boolean isBlockConnectable0(
+		final LevelAccessor level,
+		final BlockPos pos,
+		final BlockState state,
+		final BlockPos targetPos,
+		final BlockState targetState
+	) {
+		return
+			isFluidLogged(state) ||
+			((IBlockAnchor) (state.getBlock())).isBlockConnectable(level, pos, state, targetPos, targetState);
 	}
 
 	/**
@@ -150,14 +184,17 @@ public final class BlockConnectivityApi {
 		final BlockState newState
 	) {
 		if (oldState == newState) {
-			return true;
+			return false;
+		}
+		if (isFluidLogged(oldState) && isFluidLogged(newState)) {
+			return false;
 		}
 		final boolean wasAir = isAir(oldState);
 		if (wasAir != isAir(newState)) {
 			return true;
 		}
-		if (!wasAir) {
-			return true;
+		if (wasAir) {
+			return false;
 		}
 		final IBlockAnchor anchor = (IBlockAnchor) (newState.getBlock());
 		return anchor.willConnectivityChange(level, pos, oldState, newState);

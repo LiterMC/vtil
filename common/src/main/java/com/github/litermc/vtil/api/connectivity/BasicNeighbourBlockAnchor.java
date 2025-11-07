@@ -53,7 +53,7 @@ public interface BasicNeighbourBlockAnchor extends IBlockAnchor {
 		for (final Direction dir : Direction.values()) {
 			p.setWithOffset(pos, dir);
 			final BlockState s = level.getBlockState(p);
-			if (this.isBlockConnectable(level, pos, oldState, p, s) != this.isBlockConnectable(level, pos, state, p, s)) {
+			if (((IBlockAnchor) (oldState.getBlock())).isBlockConnectable(level, pos, oldState, p, s) != this.isBlockConnectable(level, pos, state, p, s)) {
 				return true;
 			}
 		}

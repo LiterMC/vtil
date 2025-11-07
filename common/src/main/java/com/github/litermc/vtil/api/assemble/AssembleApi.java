@@ -56,6 +56,7 @@ public final class AssembleApi {
 		final Set<BlockPos> blocks,
 		final ServerShip rootShip
 	) {
+		final BlockState AIR = Blocks.AIR.defaultBlockState();
 		final ServerShipWorldCore shipWorld = VSGameUtilsKt.getShipObjectWorld(level);
 		final String levelId = VSGameUtilsKt.getDimensionId(level);
 
@@ -135,7 +136,7 @@ public final class AssembleApi {
 			level.setBlock(target, state, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_MOVE_BY_PISTON);
 			// Note: Block.UPDATE_SUPPRESS_DROPS only works for Level.destroyBlock which drop the block's item form,
 			// and it does not prevent contents from dropping.
-			level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_MOVE_BY_PISTON);
+			level.setBlock(pos, AIR, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_MOVE_BY_PISTON);
 			IMoveable<?> moveableNew = MoveApi.getMover(level.getBlockEntity(target));
 			if (moveableNew == null) {
 				moveableNew = MoveApi.getMover(state.getBlock());
@@ -157,12 +158,23 @@ public final class AssembleApi {
 			entity.setPos(pos.x + offset.x, pos.y + offset.y, pos.z + offset.z);
 		}
 
+		final int MAX_BLOCK_UPDATE = 512 - 1;
+		final int BLOCK_UPDATE_FLAGS = Block.UPDATE_NEIGHBORS | Block.UPDATE_MOVE_BY_PISTON;
+
 		// update blocks
 		for (final Pair<BlockPos, BlockState> value : blockStates) {
 			final BlockPos pos = value.left();
-			final Block block = value.right().getBlock();
+			final BlockState state = value.right();
+			final Block block = state.getBlock();
+			final BlockPos targetPos = pos.offset(offset.x, offset.y, offset.z);
 			level.blockUpdated(pos, block);
-			level.blockUpdated(pos.offset(offset.x, offset.y, offset.z), block);
+			level.blockUpdated(targetPos, block);
+			state.updateIndirectNeighbourShapes(level, pos, BLOCK_UPDATE_FLAGS, MAX_BLOCK_UPDATE);
+			AIR.updateNeighbourShapes(level, pos, BLOCK_UPDATE_FLAGS, MAX_BLOCK_UPDATE);
+			state.updateNeighbourShapes(level, targetPos, BLOCK_UPDATE_FLAGS, MAX_BLOCK_UPDATE);
+			state.updateIndirectNeighbourShapes(level, targetPos, BLOCK_UPDATE_FLAGS, MAX_BLOCK_UPDATE);
+			level.onBlockStateChange(pos, state, AIR);
+			level.onBlockStateChange(targetPos, AIR, state);
 		}
 
 		final AABBic box = ship.getShipAABB();
