@@ -34,10 +34,10 @@ maven {
 
 **Fabric**:
 ```gradle
-modImplementation "com.github.litermc.vtil:Vtil-fabric-${minecraft_version}:${vtil_version}"
+modImplementation "com.github.litermc.vtil:vtil-fabric-${minecraft_version}:${vtil_version}"
 ```
 
 **Forge**:
 ```gradle
-implementation fg.deobf("com.github.litermc.vtil:Vtil-forge-${minecraft_version}:${vtil_version}")
+implementation fg.deobf("com.github.litermc.vtil:vtil-forge-${minecraft_version}:${vtil_version}")
 ```
