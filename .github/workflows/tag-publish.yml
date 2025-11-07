@@ -101,8 +101,6 @@ jobs:
           path: ./source
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          build-root-directory: ./source
       - name: Checkout Maven
         uses: actions/checkout@v5
         with:
