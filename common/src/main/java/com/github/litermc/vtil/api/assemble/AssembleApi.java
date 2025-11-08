@@ -133,10 +133,12 @@ public final class AssembleApi {
 			Clearable.tryClear(be);
 
 			final Object moveData = moveableOld != null ? moveableOld.beforeMove(level, pos, target) : null;
-			level.setBlock(target, state, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_MOVE_BY_PISTON);
+
 			// Note: Block.UPDATE_SUPPRESS_DROPS only works for Level.destroyBlock which drop the block's item form,
 			// and it does not prevent contents from dropping.
 			level.setBlock(pos, AIR, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_MOVE_BY_PISTON);
+
+			level.setBlock(target, state, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_MOVE_BY_PISTON);
 			IMoveable<?> moveableNew = MoveApi.getMover(level.getBlockEntity(target));
 			if (moveableNew == null) {
 				moveableNew = MoveApi.getMover(state.getBlock());
@@ -177,7 +179,6 @@ public final class AssembleApi {
 			level.onBlockStateChange(targetPos, AIR, state);
 		}
 
-		final AABBic box = ship.getShipAABB();
 		final Vector3d absPosition = ship.getTransform().getPositionInWorld().add(ship.getInertiaData().getCenterOfMassInShip(), new Vector3d()).sub(shipCenter.x, shipCenter.y, shipCenter.z);
 		final Vector3d position = new Vector3d(absPosition);
 		final Quaterniond rotation = new Quaterniond();
@@ -199,25 +200,23 @@ public final class AssembleApi {
 
 		// fix new ship's velocity and omega
 		if (velocity.lengthSquared() != 0 || omega.lengthSquared() != 0) {
+			final ServerShipTransformProvider oldProvider = ship.getTransformProvider();
 			ship.setTransformProvider(new ServerShipTransformProvider() {
 				@Override
 				public NextTransformAndVelocityData provideNextTransformAndVelocity(final ShipTransform transform, final ShipTransform nextTransform) {
 					if (!transform.getPositionInWorld().equals(nextTransform.getPositionInWorld()) || !transform.getShipToWorldRotation().equals(nextTransform.getShipToWorldRotation())) {
-						ship.setTransformProvider(null);
+						ship.setTransformProvider(oldProvider);
 						return null;
 					}
-					if (ship.getVelocity().lengthSquared() == 0 && ship.getOmega().lengthSquared() == 0) {
-						if (rootShip != null) {
-							final ShipTransform selfTransform2 = rootShip.getTransform();
-							selfTransform2.getShipToWorld().transformPosition(absPosition, position);
-							rotation.set(selfTransform2.getShipToWorldRotation());
-							velocity.set(rootShip.getVelocity());
-							omega.set(rootShip.getOmega());
-							scaling.set(selfTransform2.getShipToWorldScaling());
-						}
-						return new NextTransformAndVelocityData(new ShipTransformImpl(position, nextTransform.getPositionInShip(), rotation, scaling), velocity, omega);
+					if (rootShip != null) {
+						final ShipTransform selfTransform2 = rootShip.getTransform();
+						selfTransform2.getShipToWorld().transformPosition(absPosition, position);
+						rotation.set(selfTransform2.getShipToWorldRotation());
+						velocity.set(rootShip.getVelocity());
+						omega.set(rootShip.getOmega());
+						scaling.set(selfTransform2.getShipToWorldScaling());
 					}
-					return null;
+					return new NextTransformAndVelocityData(new ShipTransformImpl(position, nextTransform.getPositionInShip(), rotation, scaling), velocity, omega);
 				}
 			});
 		}

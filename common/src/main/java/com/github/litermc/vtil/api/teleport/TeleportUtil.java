@@ -41,12 +41,13 @@ public class TeleportUtil {
 		final ShipTeleportData teleportData = new ShipTeleportDataImpl(newPos, rotation, velocity, omega, dimension, null);
 		world.teleportShip(ship, teleportData);
 		if (velocity.lengthSquared() != 0 || omega.lengthSquared() != 0) {
+			final ServerShipTransformProvider oldProvider = ship.getTransformProvider();
 			ship.setTransformProvider(new ServerShipTransformProvider() {
 				@Override
 				public NextTransformAndVelocityData provideNextTransformAndVelocity(final ShipTransform prevTransform, final ShipTransform transform) {
 					final LoadedServerShip ship2 = world.getLoadedShips().getById(id);
 					if (!prevTransform.getPositionInWorld().equals(transform.getPositionInWorld()) || !prevTransform.getShipToWorldRotation().equals(transform.getShipToWorldRotation())) {
-						ship2.setTransformProvider(null);
+						ship2.setTransformProvider(oldProvider);
 						return null;
 					}
 					if (ship2.getVelocity().lengthSquared() == 0 && ship2.getOmega().lengthSquared() == 0) {
