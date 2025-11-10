@@ -4,6 +4,7 @@ import com.github.litermc.vtil.compat.CompatMods;
 import com.github.litermc.vtil.util.Pair;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Clearable;
@@ -28,14 +29,17 @@ import org.valkyrienskies.core.api.ships.properties.ShipTransform;
 import org.valkyrienskies.core.apigame.world.ServerShipWorldCore;
 import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl;
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl;
+import org.valkyrienskies.core.util.datastructures.DenseBlockPosSet;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 import com.simibubi.create.content.contraptions.actors.seat.SeatEntity;
 import com.simibubi.create.content.contraptions.glue.SuperGlueEntity;
 
-import java.util.Set;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -76,7 +80,7 @@ public final class AssembleApi {
 		final ServerShip ship = shipWorld.createNewShipAtBlock(worldCenter, false, 1.0, levelId);
 		final Vector3i shipCenter = ship.getChunkClaim().getCenterBlockCoordinates(VSGameUtilsKt.getYRange(level), new Vector3i());
 		final Vector3i offset = shipCenter.sub(worldCenter, new Vector3i());
-		final List<Pair<BlockPos, BlockState>> blockStates = new ArrayList<>(blocks.size());
+		final Map<BlockPos, BlockState> blockStates = new HashMap<>(blocks.size());
 		final List<Entity> entities = new ArrayList<>();
 
 		// get attachable entities
@@ -120,7 +124,7 @@ public final class AssembleApi {
 				continue;
 			}
 
-			blockStates.add(new Pair<>(pos.immutable(), state));
+			blockStates.put(pos.immutable(), state);
 			final CompoundTag nbt = level.getChunkAt(pos).getBlockEntityNbtForSaving(pos);
 			if (nbt != null) {
 				final BlockPos targetPos = pos.offset(offset.x, offset.y, offset.z);
@@ -164,19 +168,30 @@ public final class AssembleApi {
 		final int BLOCK_UPDATE_FLAGS = Block.UPDATE_NEIGHBORS | Block.UPDATE_MOVE_BY_PISTON;
 
 		// update blocks
-		for (final Pair<BlockPos, BlockState> value : blockStates) {
-			final BlockPos pos = value.left();
-			final BlockState state = value.right();
+		final DenseBlockPosSet tickedAirs = new DenseBlockPosSet();
+		final BlockPos.MutableBlockPos airPos = new BlockPos.MutableBlockPos();
+		for (final Map.Entry<BlockPos, BlockState> entry : blockStates.entrySet()) {
+			final BlockPos pos = entry.getKey();
+			final BlockState state = entry.getValue();
 			final Block block = state.getBlock();
 			final BlockPos targetPos = pos.offset(offset.x, offset.y, offset.z);
 			level.blockUpdated(pos, block);
-			level.blockUpdated(targetPos, block);
 			state.updateIndirectNeighbourShapes(level, pos, BLOCK_UPDATE_FLAGS, MAX_BLOCK_UPDATE);
 			AIR.updateNeighbourShapes(level, pos, BLOCK_UPDATE_FLAGS, MAX_BLOCK_UPDATE);
+			level.onBlockStateChange(pos, state, AIR);
+
+			level.blockUpdated(targetPos, block);
 			state.updateNeighbourShapes(level, targetPos, BLOCK_UPDATE_FLAGS, MAX_BLOCK_UPDATE);
 			state.updateIndirectNeighbourShapes(level, targetPos, BLOCK_UPDATE_FLAGS, MAX_BLOCK_UPDATE);
-			level.onBlockStateChange(pos, state, AIR);
 			level.onBlockStateChange(targetPos, AIR, state);
+
+			for (final Direction dir : Direction.values()) {
+				airPos.setWithOffset(targetPos, dir);
+				if (blockStates.containsKey(airPos) || !tickedAirs.add(airPos.getX(), airPos.getY(), airPos.getZ())) {
+					continue;
+				}
+				AIR.updateNeighbourShapes(level, airPos, BLOCK_UPDATE_FLAGS, MAX_BLOCK_UPDATE);
+			}
 		}
 
 		final Vector3d absPosition = ship.getTransform().getPositionInWorld().add(ship.getInertiaData().getCenterOfMassInShip(), new Vector3d()).sub(shipCenter.x, shipCenter.y, shipCenter.z);
