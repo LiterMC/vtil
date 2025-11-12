@@ -43,6 +43,16 @@ public final class VtilCommands {
 					)
 				)
 			)
+			.then(Commands.literal("assemble-async")
+				.then(Commands.argument("from", BlockPosArgument.blockPos())
+					.then(Commands.argument("to", BlockPosArgument.blockPos())
+						.then(Commands.argument("slug", StringArgumentType.word())
+							.executes((ctx) -> assembleAsync(ctx, true))
+						)
+						.executes((ctx) -> assembleAsync(ctx, false))
+					)
+				)
+			)
 		);
 	}
 
@@ -65,5 +75,27 @@ public final class VtilCommands {
 		ship.setSlug(slug);
 		source.sendSuccess(() -> Component.translatable("vtil.command.assemble.success", slug), true);
 		return (int) (ship.getId());
+	}
+
+	private static int assembleAsync(final CommandContext<CommandSourceStack> context, final boolean hasSlug) throws CommandSyntaxException {
+		final CommandSourceStack source = context.getSource();
+		final MinecraftServer server = source.getServer();
+		final ServerLevel level = source.getLevel();
+		final BlockPos from = BlockPosArgument.getLoadedBlockPos(context, "from");
+		final BlockPos to = BlockPosArgument.getLoadedBlockPos(context, "to");
+		final BlockSectionView blocks = new BlockSectionView(from, to);
+
+		AssembleApi.createShipAsync(level, blocks, VSGameUtilsKt.getShipManagingPos(level, from), Integer.MAX_VALUE)
+			.thenAccept((ship) -> {
+				if (ship == null) {
+					source.sendFailure(Component.translatable("vtil.command.assemble.empty"));
+					return;
+				}
+
+				final String slug = hasSlug ? StringArgumentType.getString(context, "slug") : "+assemble+" + ship.getId();
+				ship.setSlug(slug);
+				source.sendSuccess(() -> Component.translatable("vtil.command.assemble.success", slug), true);
+			});
+		return 1;
 	}
 }

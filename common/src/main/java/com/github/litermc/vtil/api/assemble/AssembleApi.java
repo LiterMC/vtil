@@ -1,19 +1,25 @@
 package com.github.litermc.vtil.api.assemble;
 
 import com.github.litermc.vtil.compat.CompatMods;
-import com.github.litermc.vtil.util.Pair;
+import com.github.litermc.vtil.util.TaskUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ChunkLevel;
+import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.TicketType;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.HangingEntity;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -36,10 +42,12 @@ import com.simibubi.create.content.contraptions.actors.seat.SeatEntity;
 import com.simibubi.create.content.contraptions.glue.SuperGlueEntity;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -50,7 +58,6 @@ public final class AssembleApi {
 	 * Assemble a ship with given blockset.
 	 *
 	 * @param level    World the blocks are in.
-	 * @param slug     Slug for the assembling ship.
 	 * @param blocks   Block set to assemble, must contains at least one non-air block.
 	 * @param rootShip Root ship for the assembling ship, or {@code null}. Rotation, velocity, scale, etc. will be extended.
 	 * @return The instance for created ship.
@@ -60,7 +67,6 @@ public final class AssembleApi {
 		final Set<BlockPos> blocks,
 		final ServerShip rootShip
 	) {
-		final BlockState AIR = Blocks.AIR.defaultBlockState();
 		final ServerShipWorldCore shipWorld = VSGameUtilsKt.getShipObjectWorld(level);
 		final String levelId = VSGameUtilsKt.getDimensionId(level);
 
@@ -81,30 +87,172 @@ public final class AssembleApi {
 		final Vector3i shipCenter = ship.getChunkClaim().getCenterBlockCoordinates(VSGameUtilsKt.getYRange(level), new Vector3i());
 		final Vector3i offset = shipCenter.sub(worldCenter, new Vector3i());
 		final Map<BlockPos, BlockState> blockStates = new HashMap<>(blocks.size());
-		final List<Entity> entities = new ArrayList<>();
+		final List<Entity> attachableEntities = new ArrayList<>();
 
 		// get attachable entities
 		for (final Entity entity : level.getEntities(null, new AABB(blocksBox.minX - 1, blocksBox.minY - 1, blocksBox.minZ - 1, blocksBox.maxX + 2, blocksBox.maxY + 2, blocksBox.maxZ + 2))) {
 			if (entity instanceof final HangingEntity he) {
 				final BlockPos hanging = he.getPos().relative(he.getDirection().getOpposite());
 				if (blocks.contains(hanging)) {
-					entities.add(entity);
+					attachableEntities.add(entity);
 				}
 			} else if (CompatMods.CREATE.isLoaded()) {
 				if (entity instanceof final SeatEntity seat) {
 					if (blocks.contains(seat.blockPosition())) {
-						entities.add(entity);
+						attachableEntities.add(entity);
 					}
 				} else if (entity instanceof final SuperGlueEntity glue) {
 					final AABB bb = glue.getBoundingBox();
 					if (streamBlocksInAABB(bb).anyMatch(blocks::contains)) {
-						entities.add(entity);
+						attachableEntities.add(entity);
 					}
 				}
 			}
 		}
 
-		// move blocks
+		moveBlocks(level, blocks, offset, blockStates);
+
+		if (blockStates.isEmpty()) {
+			// No block present
+			shipWorld.deleteShip(ship);
+			return null;
+		}
+
+		// move attachable entities
+		for (final Entity entity : attachableEntities) {
+			final Vec3 pos = entity.position();
+			entity.setPos(pos.x + offset.x, pos.y + offset.y, pos.z + offset.z);
+		}
+
+		sendBlockUpdates(level, offset, blockStates);
+		fixShipStatus(shipWorld, ship, shipCenter, rootShip);
+		return ship;
+	}
+
+	/**
+	 * Assemble a ship with given blockset.
+	 * Async version will create ship across multiple ticks.
+	 *
+	 * @param level    World the blocks are in.
+	 * @param blocks   Block set to assemble, must contains at least one non-air block.
+	 * @param rootShip Root ship for the assembling ship, or {@code null}. Rotation, velocity, scale, etc. will be extended.
+	 * @param maxDelay The max ticks to delay the ship assembly. When reached the timeout,
+	 *                 ship chunks will forcibly be waited in the main server thread.
+	 * @return A CompletableFuture that provides the instance for created ship.
+	 */
+	public static CompletableFuture<ServerShip> createShipAsync(
+		final ServerLevel level,
+		final Set<BlockPos> blocks,
+		final ServerShip rootShip,
+		final int maxDelay
+	) {
+		final BlockState AIR = Blocks.AIR.defaultBlockState();
+		final ServerShipWorldCore shipWorld = VSGameUtilsKt.getShipObjectWorld(level);
+		final String levelId = VSGameUtilsKt.getDimensionId(level);
+		final int chunkLevel = ChunkLevel.byStatus(ChunkStatus.EMPTY);
+		final ServerChunkCache chunkCache = level.getChunkSource();
+
+		final AABBd blocksBox = new AABBd();
+		{
+			final BlockPos pos = blocks.iterator().next();
+			blocksBox.setMin(pos.getX(), pos.getY(), pos.getZ()).setMax(pos.getX(), pos.getY(), pos.getZ());
+		}
+		for (final BlockPos pos : blocks) {
+			blocksBox.union(pos.getX(), pos.getY(), pos.getZ());
+		}
+		blocksBox.maxX += 1;
+		blocksBox.maxY += 1;
+		blocksBox.maxZ += 1;
+
+		final Vector3i worldCenter = new Vector3i(blocksBox.center(new Vector3d()), RoundingMode.TRUNCATE);
+		final ServerShip ship = shipWorld.createNewShipAtBlock(worldCenter, false, 1.0, levelId);
+		final Vector3i shipCenter = ship.getChunkClaim().getCenterBlockCoordinates(VSGameUtilsKt.getYRange(level), new Vector3i());
+		final Vector3i offset = shipCenter.sub(worldCenter, new Vector3i());
+
+		final ChunkPos
+			minChunk = new ChunkPos(
+				SectionPos.posToSectionCoord(shipCenter.x - blocksBox.lengthX() / 2),
+				SectionPos.posToSectionCoord(shipCenter.z - blocksBox.lengthZ() / 2)
+			),
+			maxChunk = new ChunkPos(
+				SectionPos.posToSectionCoord(shipCenter.x + blocksBox.lengthX() / 2),
+				SectionPos.posToSectionCoord(shipCenter.z + blocksBox.lengthZ() / 2)
+			);
+		final List<ChunkPos> neededChunks = ChunkPos.rangeClosed(minChunk, maxChunk).toList();
+		for (final ChunkPos chunkPos : neededChunks) {
+			chunkCache.updateChunkForced(chunkPos, true);
+		}
+
+		final CompletableFuture future = new CompletableFuture();
+
+		final Runnable callback = new Runnable() {
+			private int timeout = maxDelay;
+
+			@Override
+			public void run() {
+				boolean allLoaded = true;
+				for (final ChunkPos chunkPos : neededChunks) {
+					if (chunkCache.getChunkNow(chunkPos.x, chunkPos.z) == null) {
+						allLoaded = false;
+						break;
+					}
+				}
+				if (!allLoaded && this.timeout > 0) {
+					this.timeout--;
+					TaskUtil.queueTickEnd(this);
+					return;
+				}
+
+				final Map<BlockPos, BlockState> blockStates = new HashMap<>(blocks.size());
+				final List<Entity> attachableEntities = new ArrayList<>();
+
+				// get attachable entities
+				for (final Entity entity : level.getEntities(null, new AABB(blocksBox.minX - 1, blocksBox.minY - 1, blocksBox.minZ - 1, blocksBox.maxX + 2, blocksBox.maxY + 2, blocksBox.maxZ + 2))) {
+					if (entity instanceof final HangingEntity he) {
+						final BlockPos hanging = he.getPos().relative(he.getDirection().getOpposite());
+						if (blocks.contains(hanging)) {
+							attachableEntities.add(entity);
+						}
+					} else if (CompatMods.CREATE.isLoaded()) {
+						if (entity instanceof final SeatEntity seat) {
+							if (blocks.contains(seat.blockPosition())) {
+								attachableEntities.add(entity);
+							}
+						} else if (entity instanceof final SuperGlueEntity glue) {
+							final AABB bb = glue.getBoundingBox();
+							if (streamBlocksInAABB(bb).anyMatch(blocks::contains)) {
+								attachableEntities.add(entity);
+							}
+						}
+					}
+				}
+
+				moveBlocks(level, blocks, offset, blockStates);
+
+				if (blockStates.isEmpty()) {
+					// No block present
+					shipWorld.deleteShip(ship);
+					future.complete(null);
+					return;
+				}
+
+				// move attachable entities
+				for (final Entity entity : attachableEntities) {
+					final Vec3 pos = entity.position();
+					entity.setPos(pos.x + offset.x, pos.y + offset.y, pos.z + offset.z);
+				}
+
+				sendBlockUpdates(level, offset, blockStates);
+				fixShipStatus(shipWorld, ship, shipCenter, rootShip);
+				future.complete(ship);
+			}
+		};
+		TaskUtil.queueTickEnd(callback);
+		return future;
+	}
+
+	private static void moveBlocks(final ServerLevel level, final Set<BlockPos> blocks, final Vector3i offset, final Map<BlockPos, BlockState> blockStates) {
+		final BlockState AIR = Blocks.AIR.defaultBlockState();
 		for (final BlockPos pos : blocks) {
 			final BlockPos target = pos.offset(offset.x, offset.y, offset.z);
 			final BlockState oldState = level.getBlockState(pos);
@@ -151,23 +299,13 @@ public final class AssembleApi {
 				((IMoveable) (moveableNew)).afterMove(level, pos, target, moveData);
 			}
 		}
+	}
 
-		if (blockStates.isEmpty()) {
-			// No block present
-			shipWorld.deleteShip(ship);
-			return null;
-		}
-
-		// move entities
-		for (final Entity entity : entities) {
-			final Vec3 pos = entity.position();
-			entity.setPos(pos.x + offset.x, pos.y + offset.y, pos.z + offset.z);
-		}
-
+	private static void sendBlockUpdates(final ServerLevel level, final Vector3i offset, final Map<BlockPos, BlockState> blockStates) {
 		final int MAX_BLOCK_UPDATE = 512 - 1;
 		final int BLOCK_UPDATE_FLAGS = Block.UPDATE_NEIGHBORS | Block.UPDATE_MOVE_BY_PISTON;
+		final BlockState AIR = Blocks.AIR.defaultBlockState();
 
-		// update blocks
 		final DenseBlockPosSet tickedAirs = new DenseBlockPosSet();
 		final BlockPos.MutableBlockPos airPos = new BlockPos.MutableBlockPos();
 		for (final Map.Entry<BlockPos, BlockState> entry : blockStates.entrySet()) {
@@ -193,7 +331,10 @@ public final class AssembleApi {
 				AIR.updateNeighbourShapes(level, airPos, BLOCK_UPDATE_FLAGS, MAX_BLOCK_UPDATE);
 			}
 		}
+	}
 
+	private static void fixShipStatus(final ServerShipWorldCore shipWorld, final ServerShip ship, final Vector3i shipCenter, final ServerShip rootShip) {
+		final String dimension = rootShip == null ? ship.getChunkClaimDimension() : rootShip.getChunkClaimDimension();
 		final Vector3d absPosition = ship.getTransform().getPositionInWorld().add(ship.getInertiaData().getCenterOfMassInShip(), new Vector3d()).sub(shipCenter.x, shipCenter.y, shipCenter.z);
 		final Vector3d position = new Vector3d(absPosition);
 		final Quaterniond rotation = new Quaterniond();
@@ -211,7 +352,7 @@ public final class AssembleApi {
 			scaling.set(selfTransform.getShipToWorldScaling());
 			scale = Math.sqrt(scaling.lengthSquared() / 3);
 		}
-		shipWorld.teleportShip(ship, new ShipTeleportDataImpl(position, rotation, velocity, omega, levelId, scale));
+		shipWorld.teleportShip(ship, new ShipTeleportDataImpl(position, rotation, velocity, omega, dimension, scale));
 
 		// fix new ship's velocity and omega
 		if (velocity.lengthSquared() != 0 || omega.lengthSquared() != 0) {
@@ -235,7 +376,6 @@ public final class AssembleApi {
 				}
 			});
 		}
-		return ship;
 	}
 
 	private static Stream<BlockPos> streamBlocksInAABB(AABB box) {
