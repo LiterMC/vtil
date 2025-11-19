@@ -199,7 +199,7 @@ public abstract class AbstractAssemblerBlockEntity extends BlockEntity {
 	}
 
 	protected ServerShip createShip(final ServerLevel level, final Set<BlockPos> blocks) {
-		final ServerShip ship = AssembleApi.createShip(level, blocks, VSGameUtilsKt.getShipManagingPos(level, this.getBlockPos()));
+		final ServerShip ship = AssembleApi.createShip(level, blocks);
 		if (ship == null) {
 			this.finishAssembleAsNoBlockToAssemble();
 			return null;

@@ -22,7 +22,10 @@
 		"minecraft.position_based_conn.MixinOnlyNoCeilSupportedBlocks",
 		"minecraft.position_based_conn.MixinOnlyWallSupportedBlocks",
 		"minecraft.position_based_conn.MixinSlabBlock",
-		"minecraft.position_based_conn.MixinTrapDoorBlock"
+		"minecraft.position_based_conn.MixinTrapDoorBlock",
+		"valkyrienskies.MixinEntityDragger",
+		"valkyrienskies.MixinShipObjectServerWorld",
+		"valkyrienskies.MixinShipSelector"
 	],
 	"client": [
 	],

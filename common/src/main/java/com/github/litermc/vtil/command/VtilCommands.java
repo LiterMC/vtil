@@ -2,7 +2,9 @@ package com.github.litermc.vtil.command;
 
 import com.github.litermc.vtil.Constants;
 import com.github.litermc.vtil.api.assemble.AssembleApi;
+import com.github.litermc.vtil.api.assemble.ShipAllocator;
 import com.github.litermc.vtil.util.BlockSectionView;
+import com.github.litermc.vtil.util.LevelUtil;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -19,7 +21,6 @@ import net.minecraft.server.level.ServerLevel;
 
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
-import org.valkyrienskies.mod.common.VSGameUtilsKt;
 import org.valkyrienskies.mod.common.command.ShipArgument;
 import org.valkyrienskies.mod.mixinducks.feature.command.VSCommandSource;
 
@@ -53,6 +54,11 @@ public final class VtilCommands {
 					)
 				)
 			)
+			.then(Commands.literal("delete")
+				.then(Commands.argument("ships", ShipArgument.Companion.ships())
+					.executes(VtilCommands::delete)
+				)
+			)
 		);
 	}
 
@@ -64,7 +70,7 @@ public final class VtilCommands {
 		final BlockPos to = BlockPosArgument.getLoadedBlockPos(context, "to");
 		final BlockSectionView blocks = new BlockSectionView(from, to);
 
-		final ServerShip ship = AssembleApi.createShip(level, blocks, VSGameUtilsKt.getShipManagingPos(level, from));
+		final ServerShip ship = AssembleApi.createShip(level, blocks);
 
 		if (ship == null) {
 			source.sendFailure(Component.translatable("vtil.command.assemble.empty"));
@@ -85,7 +91,7 @@ public final class VtilCommands {
 		final BlockPos to = BlockPosArgument.getLoadedBlockPos(context, "to");
 		final BlockSectionView blocks = new BlockSectionView(from, to);
 
-		AssembleApi.createShipAsync(level, blocks, VSGameUtilsKt.getShipManagingPos(level, from), Integer.MAX_VALUE)
+		AssembleApi.createShipAsync(level, blocks, Integer.MAX_VALUE)
 			.thenAccept((ship) -> {
 				if (ship == null) {
 					source.sendFailure(Component.translatable("vtil.command.assemble.empty"));
@@ -97,5 +103,30 @@ public final class VtilCommands {
 				source.sendSuccess(() -> Component.translatable("vtil.command.assemble.success", slug), true);
 			});
 		return 1;
+	}
+
+	private static int delete(final CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+		final CommandSourceStack source = context.getSource();
+		final MinecraftServer server = source.getServer();
+		final ShipAllocator allocator = ShipAllocator.get(server);
+		final Set<Ship> ships = ShipArgument.Companion.getShips((CommandContext<VSCommandSource>) ((CommandContext<?>) (context)), "ships");
+		int successCount = 0;
+		for (final Ship ship : ships) {
+			if (!(ship instanceof ServerShip serverShip)) {
+				continue;
+			}
+			final ServerLevel level = LevelUtil.getLevel(serverShip.getChunkClaimDimension());
+			if (level == null) {
+				continue;
+			}
+			allocator.putShip(serverShip);
+			successCount++;
+		}
+		final int finalSuccessCount = successCount;
+		source.sendSuccess(() ->
+			Component.translatable("command.valkyrienskies.delete.success", finalSuccessCount),
+			true
+		);
+		return finalSuccessCount;
 	}
 }

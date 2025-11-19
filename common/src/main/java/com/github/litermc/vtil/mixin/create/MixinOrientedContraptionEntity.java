@@ -58,7 +58,11 @@ public abstract class MixinOrientedContraptionEntity extends AbstractContraption
 
 	@WrapOperation(
 		method = "stopRiding",
-		at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/OrientedContraptionEntity;disassemble()V", remap = false),
+		at = @At(
+			value = "INVOKE",
+			target = "Lcom/simibubi/create/content/contraptions/OrientedContraptionEntity;disassemble()V",
+			remap = false
+		),
 		remap = true
 	)
 	public void stopRiding$disassemble(final OrientedContraptionEntity entity, final Operation<Void> operation) {

@@ -7,29 +7,35 @@ import java.nio.file.Path;
 public final class ConfigSpec {
 	public static final ConfigFile serverSpec;
 
-	// public static final ConfigFile.Value<Boolean> FORCE_LOAD_ALL_SHIPS;
+	public static final ConfigFile.Value<Boolean> REUSE_SHIP_CHUNKS;
+	public static final ConfigFile.Value<Boolean> RECYCLE_EMPTY_SHIPS;
 
 	private ConfigSpec() {}
 
 	static {
 		final ConfigFile.Builder builder = PlatformHelper.get().createConfigBuilder();
-		// {
-		// 	builder
-		// 		.comment("General settings")
-		// 		.push("general");
+		{
+			builder
+				.comment("Ship recycle settings")
+				.push("recycle");
 
-		// 	FORCE_LOAD_ALL_SHIPS = builder
-		// 		.comment("Should force load all ships on the server")
-		// 		.define("force_load_all_ships", Config.forceLoadAllShips);
+			REUSE_SHIP_CHUNKS = builder
+				.comment("Reuse deleted ship's chunks to assemble new ships when possible.")
+				.define("reuse_ship_chunks", Config.reuseShipChunks);
 
-		// 	builder.pop();
-		// }
+			RECYCLE_EMPTY_SHIPS = builder
+				.comment("Recycle ships that no longer contains any blocks.")
+				.define("recycle_empty_ships", Config.recycleEmptyShips);
+
+			builder.pop();
+		}
 
 		serverSpec = builder.build(ConfigSpec::syncServer);
 	}
 
 	public static void syncServer(Path path) {
-		// Config.forceLoadAllShips = FORCE_LOAD_ALL_SHIPS.get();
+		Config.reuseShipChunks = REUSE_SHIP_CHUNKS.get();
+		Config.recycleEmptyShips = RECYCLE_EMPTY_SHIPS.get();
 	}
 
 	public static void syncClient(Path path) {

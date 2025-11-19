@@ -11,6 +11,7 @@ import net.minecraft.server.level.ChunkLevel;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.TicketType;
+import net.minecraft.util.Mth;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.HangingEntity;
@@ -24,8 +25,9 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import org.joml.Quaterniond;
-import org.joml.RoundingMode;
+import org.joml.Quaterniondc;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.joml.Vector3i;
 import org.joml.primitives.AABBd;
 import org.joml.primitives.AABBic;
@@ -48,31 +50,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public final class AssembleApi {
+	private static final Quaterniondc ZERO_QUATD = new Quaterniond();
+	private static final Vector3dc ZERO_VEC3D = new Vector3d();
+
 	private AssembleApi() {}
 
 	/**
 	 * Assemble a ship with given blockset.
+	 * If target block set is on a ship, the rotation, velocity, scale, etc. will be extended.
 	 *
 	 * @param level    World the blocks are in.
-	 * @param blocks   Block set to assemble, must contains at least one non-air block.
-	 * @param rootShip Root ship for the assembling ship, or {@code null}. Rotation, velocity, scale, etc. will be extended.
+	 * @param blocks   Block set to assemble, must contains at least one non-air block,
+	 *                 and must all in the world or on the same ship.
 	 * @return The instance for created ship.
 	 */
 	public static ServerShip createShip(
 		final ServerLevel level,
-		final Set<BlockPos> blocks,
-		final ServerShip rootShip
+		final Set<BlockPos> blocks
 	) {
+		final ShipAllocator allocator = ShipAllocator.get(level.getServer());
 		final ServerShipWorldCore shipWorld = VSGameUtilsKt.getShipObjectWorld(level);
 		final String levelId = VSGameUtilsKt.getDimensionId(level);
+		final ServerShip rootShip;
 
 		final AABBd blocksBox = new AABBd();
 		{
 			final BlockPos pos = blocks.iterator().next();
+			final ServerShip rootShipLoaded = VSGameUtilsKt.getShipObjectManagingPos(level, pos);
+			rootShip = rootShipLoaded != null ? rootShipLoaded : VSGameUtilsKt.getShipManagingPos(level, pos);
 			blocksBox.setMin(pos.getX(), pos.getY(), pos.getZ()).setMax(pos.getX(), pos.getY(), pos.getZ());
 		}
 		for (final BlockPos pos : blocks) {
@@ -82,8 +89,10 @@ public final class AssembleApi {
 		blocksBox.maxY += 1;
 		blocksBox.maxZ += 1;
 
-		final Vector3i worldCenter = new Vector3i(blocksBox.center(new Vector3d()), RoundingMode.TRUNCATE);
-		final ServerShip ship = shipWorld.createNewShipAtBlock(worldCenter, false, 1.0, levelId);
+		final Vector3d worldCenterD = blocksBox.center(new Vector3d());
+		final Vector3i worldCenter = new Vector3i(Mth.floor(worldCenterD.x()), Mth.floor(worldCenterD.y()), Mth.floor(worldCenterD.z()));
+		final ServerShip ship = allocator.allocShip()
+			.consume(new ShipTeleportDataImpl(worldCenterD, ZERO_QUATD, ZERO_VEC3D, ZERO_VEC3D, levelId, 1.0));
 		final Vector3i shipCenter = ship.getChunkClaim().getCenterBlockCoordinates(VSGameUtilsKt.getYRange(level), new Vector3i());
 		final Vector3i offset = shipCenter.sub(worldCenter, new Vector3i());
 		final Map<BlockPos, BlockState> blockStates = new HashMap<>(blocks.size());
@@ -103,7 +112,7 @@ public final class AssembleApi {
 					}
 				} else if (entity instanceof final SuperGlueEntity glue) {
 					final AABB bb = glue.getBoundingBox();
-					if (streamBlocksInAABB(bb).anyMatch(blocks::contains)) {
+					if (BlockPos.betweenClosedStream(bb).anyMatch(blocks::contains)) {
 						attachableEntities.add(entity);
 					}
 				}
@@ -114,7 +123,7 @@ public final class AssembleApi {
 
 		if (blockStates.isEmpty()) {
 			// No block present
-			shipWorld.deleteShip(ship);
+			allocator.putShip(ship);
 			return null;
 		}
 
@@ -125,17 +134,18 @@ public final class AssembleApi {
 		}
 
 		sendBlockUpdates(level, offset, blockStates);
-		fixShipStatus(shipWorld, ship, shipCenter, rootShip);
+		fixShipStatus(shipWorld, ship, new Vector3d(shipCenter), new Vector3d(worldCenter), rootShip);
 		return ship;
 	}
 
 	/**
 	 * Assemble a ship with given blockset.
 	 * Async version will create ship across multiple ticks.
+	 * This method still need be invoked from main thread.
 	 *
 	 * @param level    World the blocks are in.
-	 * @param blocks   Block set to assemble, must contains at least one non-air block.
-	 * @param rootShip Root ship for the assembling ship, or {@code null}. Rotation, velocity, scale, etc. will be extended.
+	 * @param blocks   Block set to assemble, must contains at least one non-air block,
+	 *                 and must all in the world or on the same ship.
 	 * @param maxDelay The max ticks to delay the ship assembly. When reached the timeout,
 	 *                 ship chunks will forcibly be waited in the main server thread.
 	 * @return A CompletableFuture that provides the instance for created ship.
@@ -143,18 +153,21 @@ public final class AssembleApi {
 	public static CompletableFuture<ServerShip> createShipAsync(
 		final ServerLevel level,
 		final Set<BlockPos> blocks,
-		final ServerShip rootShip,
 		final int maxDelay
 	) {
 		final BlockState AIR = Blocks.AIR.defaultBlockState();
+		final ShipAllocator allocator = ShipAllocator.get(level.getServer());
 		final ServerShipWorldCore shipWorld = VSGameUtilsKt.getShipObjectWorld(level);
 		final String levelId = VSGameUtilsKt.getDimensionId(level);
 		final int chunkLevel = ChunkLevel.byStatus(ChunkStatus.EMPTY);
 		final ServerChunkCache chunkCache = level.getChunkSource();
+		final ServerShip rootShip;
 
 		final AABBd blocksBox = new AABBd();
 		{
 			final BlockPos pos = blocks.iterator().next();
+			final ServerShip rootShipLoaded = VSGameUtilsKt.getShipObjectManagingPos(level, pos);
+			rootShip = rootShipLoaded != null ? rootShipLoaded : VSGameUtilsKt.getShipManagingPos(level, pos);
 			blocksBox.setMin(pos.getX(), pos.getY(), pos.getZ()).setMax(pos.getX(), pos.getY(), pos.getZ());
 		}
 		for (final BlockPos pos : blocks) {
@@ -164,9 +177,10 @@ public final class AssembleApi {
 		blocksBox.maxY += 1;
 		blocksBox.maxZ += 1;
 
-		final Vector3i worldCenter = new Vector3i(blocksBox.center(new Vector3d()), RoundingMode.TRUNCATE);
-		final ServerShip ship = shipWorld.createNewShipAtBlock(worldCenter, false, 1.0, levelId);
-		final Vector3i shipCenter = ship.getChunkClaim().getCenterBlockCoordinates(VSGameUtilsKt.getYRange(level), new Vector3i());
+		final Vector3d worldCenterD = blocksBox.center(new Vector3d());
+		final Vector3i worldCenter = new Vector3i(Mth.floor(worldCenterD.x()), Mth.floor(worldCenterD.y()), Mth.floor(worldCenterD.z()));
+		final ShipAllocator.ServerShipHolder shipHolder = allocator.allocShip();
+		final Vector3i shipCenter = shipHolder.getShipData().getChunkClaim().getCenterBlockCoordinates(VSGameUtilsKt.getYRange(level), new Vector3i());
 		final Vector3i offset = shipCenter.sub(worldCenter, new Vector3i());
 
 		final ChunkPos
@@ -179,6 +193,7 @@ public final class AssembleApi {
 				SectionPos.posToSectionCoord(shipCenter.z + blocksBox.lengthZ() / 2)
 			);
 		final List<ChunkPos> neededChunks = ChunkPos.rangeClosed(minChunk, maxChunk).toList();
+		// TODO: this may cause newly created ship missing collision
 		for (final ChunkPos chunkPos : neededChunks) {
 			chunkCache.updateChunkForced(chunkPos, true);
 		}
@@ -202,6 +217,7 @@ public final class AssembleApi {
 					TaskUtil.queueTickEnd(this);
 					return;
 				}
+				final ServerShip ship = shipHolder.consume(new ShipTeleportDataImpl(worldCenterD, ZERO_QUATD, ZERO_VEC3D, ZERO_VEC3D, levelId, 1.0));
 
 				final Map<BlockPos, BlockState> blockStates = new HashMap<>(blocks.size());
 				final List<Entity> attachableEntities = new ArrayList<>();
@@ -220,7 +236,7 @@ public final class AssembleApi {
 							}
 						} else if (entity instanceof final SuperGlueEntity glue) {
 							final AABB bb = glue.getBoundingBox();
-							if (streamBlocksInAABB(bb).anyMatch(blocks::contains)) {
+							if (BlockPos.betweenClosedStream(bb).anyMatch(blocks::contains)) {
 								attachableEntities.add(entity);
 							}
 						}
@@ -231,7 +247,6 @@ public final class AssembleApi {
 
 				if (blockStates.isEmpty()) {
 					// No block present
-					shipWorld.deleteShip(ship);
 					future.complete(null);
 					return;
 				}
@@ -243,7 +258,7 @@ public final class AssembleApi {
 				}
 
 				sendBlockUpdates(level, offset, blockStates);
-				fixShipStatus(shipWorld, ship, shipCenter, rootShip);
+				fixShipStatus(shipWorld, ship, new Vector3d(shipCenter), new Vector3d(worldCenter), rootShip);
 				future.complete(ship);
 			}
 		};
@@ -333,9 +348,15 @@ public final class AssembleApi {
 		}
 	}
 
-	private static void fixShipStatus(final ServerShipWorldCore shipWorld, final ServerShip ship, final Vector3i shipCenter, final ServerShip rootShip) {
-		final String dimension = rootShip == null ? ship.getChunkClaimDimension() : rootShip.getChunkClaimDimension();
-		final Vector3d absPosition = ship.getTransform().getPositionInWorld().add(ship.getInertiaData().getCenterOfMassInShip(), new Vector3d()).sub(shipCenter.x, shipCenter.y, shipCenter.z);
+	private static void fixShipStatus(
+		final ServerShipWorldCore shipWorld,
+		final ServerShip ship,
+		final Vector3dc shipAnchor,
+		final Vector3dc targetAnchor,
+		final ServerShip rootShip
+	) {
+		final String dimension = ship.getChunkClaimDimension();
+		final Vector3d absPosition = ship.getTransform().getPositionInShip().sub(shipAnchor, new Vector3d()).add(targetAnchor);
 		final Vector3d position = new Vector3d(absPosition);
 		final Quaterniond rotation = new Quaterniond();
 		final Vector3d velocity = new Vector3d();
@@ -376,21 +397,5 @@ public final class AssembleApi {
 				}
 			});
 		}
-	}
-
-	private static Stream<BlockPos> streamBlocksInAABB(AABB box) {
-		final int
-			minX = (int) (Math.round(box.minX)), maxX = (int) (Math.round(box.maxX)),
-			minY = (int) (Math.round(box.minY)), maxY = (int) (Math.round(box.maxY)),
-			minZ = (int) (Math.round(box.minZ)), maxZ = (int) (Math.round(box.maxZ));
-		final int widthX = maxX - minX, widthY = maxY - minY, widthZ = maxZ - minZ;
-		return IntStream.range(0, widthX * widthY * widthZ).mapToObj((i) -> {
-			final int x = i % widthX + minX;
-			i /= widthX;
-			final int z = i % widthZ + minZ;
-			i /= widthZ;
-			final int y = i + minY;
-			return new BlockPos(x, y, z);
-		});
 	}
 }
