@@ -140,7 +140,7 @@ public final class AssembleApi {
 
 	/**
 	 * Assemble a ship with given blockset.
-	 * Async version will create ship across multiple ticks.
+	 * Async version will create ship across multiple ticks, but still do all operations on main thread.
 	 * This method still need be invoked from main thread.
 	 *
 	 * @param level    World the blocks are in.

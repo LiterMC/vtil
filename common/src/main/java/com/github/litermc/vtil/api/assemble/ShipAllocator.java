@@ -304,6 +304,9 @@ public final class ShipAllocator extends SavedData {
 		}
 	}
 
+	/**
+	 * SafeShipIterable can be used to wrap an {@link Iterable} to filter out recycled ships.
+	 */
 	public static class SafeShipIterable<T extends Ship> implements Iterable<T> {
 		private final Iterable<T> ships;
 		private final MinecraftServer server;
@@ -323,6 +326,9 @@ public final class ShipAllocator extends SavedData {
 		}
 	}
 
+	/**
+	 * SafeShipIterable can be used to wrap an {@link Iterator} to filter out recycled ships.
+	 */
 	public static class SafeShipIterator<T extends Ship> implements Iterator<T> {
 		private final Iterator<T> ships;
 		private T nextShip = null;
