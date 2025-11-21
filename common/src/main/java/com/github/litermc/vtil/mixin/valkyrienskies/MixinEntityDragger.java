@@ -41,6 +41,9 @@ public class MixinEntityDragger {
 			return operation.call(query, id);
 		}
 		final Ship ship = operation.call(query, id);
+		if (ship == null) {
+			return null;
+		}
 		final String slug = ship.getSlug();
 		if (slug != null && slug.startsWith(ShipAllocator.REUSABLE_SHIP_SLUG_PREFIX)) {
 			return null;
