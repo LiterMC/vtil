@@ -1,6 +1,7 @@
 package com.github.litermc.vtil.api.assemble;
 
 import com.github.litermc.vtil.Constants;
+import com.github.litermc.vtil.accessor.ShipObjectServerWorldAccessor;
 import com.github.litermc.vtil.config.Config;
 import com.github.litermc.vtil.platform.PlatformHelper;
 import com.github.litermc.vtil.util.LevelUtil;
@@ -127,7 +128,7 @@ public final class ShipAllocator extends SavedData {
 		final ServerLevel level = LevelUtil.getLevel(ship.getChunkClaimDimension());
 		ship.setSlug(REUSABLE_SHIP_SLUG_PREFIX + shipId);
 		ship.setStatic(true);
-		clearShip(level, ship);
+		clearShip(this.shipWorld, level, ship);
 
 		if (!Config.reuseShipChunks) {
 			this.shipWorld.deleteShip(ship);
@@ -197,7 +198,7 @@ public final class ShipAllocator extends SavedData {
 		return this.new ServerShipHolder(ship);
 	}
 
-	private static void clearShip(final ServerLevel level, final ServerShip ship) {
+	private static void clearShip(final ServerShipWorldCore world, final ServerLevel level, final ServerShip ship) {
 		final BlockState AIR = Blocks.AIR.defaultBlockState();
 		MutableClassToInstanceMap<Object> attachments = null;
 		if (ship instanceof final ShipData shipData) {
@@ -210,6 +211,10 @@ public final class ShipAllocator extends SavedData {
 				ship.saveAttachment(clazz, null);
 			}
 		}
+		for (final Integer cid : ((ShipObjectServerWorldAccessor) (world)).vtil$getConstraintIds(ship.getId())) {
+			world.removeConstraint(cid);
+		}
+		// TODO: remove disabledCollisionPairs but it is obfuscated
 		final AABBic box = ship.getShipAABB();
 		if (box == null) {
 			return;
@@ -279,7 +284,7 @@ public final class ShipAllocator extends SavedData {
 			final long shipId = this.ship.getId();
 			final ServerShip ship = ShipAllocator.this.getShip(shipId);
 
-			clearShip(LevelUtil.getLevel(ship.getChunkClaimDimension()), ship);
+			clearShip(ShipAllocator.this.shipWorld, LevelUtil.getLevel(ship.getChunkClaimDimension()), ship);
 			ship.setStatic(false);
 			ship.setSlug(slug);
 
