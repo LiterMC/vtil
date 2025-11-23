@@ -38,16 +38,7 @@ public class MixinEntityDragger {
 			if (allocator != null && allocator.contains(id)) {
 				return null;
 			}
-			return operation.call(query, id);
 		}
-		final Ship ship = operation.call(query, id);
-		if (ship == null) {
-			return null;
-		}
-		final String slug = ship.getSlug();
-		if (slug != null && slug.startsWith(ShipAllocator.REUSABLE_SHIP_SLUG_PREFIX)) {
-			return null;
-		}
-		return ship;
+		return operation.call(query, id);
 	}
 }

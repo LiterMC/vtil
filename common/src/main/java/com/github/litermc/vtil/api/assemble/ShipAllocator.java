@@ -9,6 +9,7 @@ import com.github.litermc.vtil.util.LevelUtil;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -17,6 +18,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.MutableClassToInstanceMap;
 import org.joml.Quaterniond;
 import org.joml.Quaterniondc;
@@ -25,16 +28,21 @@ import org.joml.Vector3dc;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 import org.joml.primitives.AABBic;
+import org.valkyrienskies.core.api.ships.LoadedServerShip;
 import org.valkyrienskies.core.api.ships.QueryableShipData;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.core.apigame.ShipTeleportData;
+import org.valkyrienskies.core.apigame.world.IPlayer;
 import org.valkyrienskies.core.apigame.world.ServerShipWorldCore;
 import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl;
 import org.valkyrienskies.core.impl.game.ships.ShipData;
 import org.valkyrienskies.core.impl.game.ships.ShipObjectServer;
+import org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld;
+import org.valkyrienskies.core.impl.networking.impl.PacketShipRemove;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -128,11 +136,28 @@ public final class ShipAllocator extends SavedData {
 		final ServerLevel level = LevelUtil.getLevel(ship.getChunkClaimDimension());
 		ship.setSlug(REUSABLE_SHIP_SLUG_PREFIX + shipId);
 		ship.setStatic(true);
+
 		clearShip(this.shipWorld, level, ship);
 
 		if (!Config.reuseShipChunks) {
 			this.shipWorld.deleteShip(ship);
 			return false;
+		}
+
+		final ServerShip shipData = this.shipWorld.getAllShips().getById(shipId);
+		if (shipData != null) {
+			final ArrayList<IPlayer> players = new ArrayList<>(8);
+			((ShipObjectServerWorld) (this.shipWorld)).getPlayersToTrackedShips().forEach((player, tracking) -> {
+				if (tracking.contains(shipData)) {
+					players.add(player);
+				}
+			});
+			if (!players.isEmpty()) {
+				((ShipObjectServerWorldAccessor) (this.shipWorld)).vtil$getSimplePackets().sendToClients(
+					new PacketShipRemove(List.of(shipId)),
+					players.toArray(new IPlayer[players.size()])
+				);
+			}
 		}
 
 		final Vector3i center = ship.getChunkClaim().getCenterBlockCoordinates(VSGameUtilsKt.getYRange(level), new Vector3i());
@@ -200,6 +225,7 @@ public final class ShipAllocator extends SavedData {
 
 	private static void clearShip(final ServerShipWorldCore world, final ServerLevel level, final ServerShip ship) {
 		final BlockState AIR = Blocks.AIR.defaultBlockState();
+		ship.setTransformProvider(null);
 		MutableClassToInstanceMap<Object> attachments = null;
 		if (ship instanceof final ShipData shipData) {
 			attachments = shipData.getPersistentAttachedData();

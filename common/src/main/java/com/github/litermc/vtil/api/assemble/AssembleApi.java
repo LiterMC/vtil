@@ -297,9 +297,9 @@ public final class AssembleApi {
 				level.getChunkAt(targetPos).setBlockEntityNbt(nbt);
 			}
 
-			Clearable.tryClear(be);
-
 			final Object moveData = moveableOld != null ? moveableOld.beforeMove(level, pos, target) : null;
+
+			level.removeBlockEntity(pos);
 
 			// Note: Block.UPDATE_SUPPRESS_DROPS only works for Level.destroyBlock which drop the block's item form,
 			// and it does not prevent contents from dropping.
@@ -355,47 +355,51 @@ public final class AssembleApi {
 		final Vector3dc targetAnchor,
 		final ServerShip rootShip
 	) {
+		// fix new ship's velocity and omega
 		final String dimension = ship.getChunkClaimDimension();
-		final Vector3d absPosition = ship.getTransform().getPositionInShip().sub(shipAnchor, new Vector3d()).add(targetAnchor);
-		final Vector3d position = new Vector3d(absPosition);
+		final Vector3d position = new Vector3d().set(ship.getTransform().getPositionInShip()).sub(shipAnchor).add(targetAnchor);
 		final Quaterniond rotation = new Quaterniond();
 		final Vector3d velocity = new Vector3d();
 		final Vector3d omega = new Vector3d();
 		final Vector3d scaling = new Vector3d(1);
-		double scale = 1.0;
 
-		if (rootShip != null) {
-			final ShipTransform selfTransform = rootShip.getTransform();
-			selfTransform.getShipToWorld().transformPosition(position);
-			rotation.set(selfTransform.getShipToWorldRotation());
-			velocity.set(rootShip.getVelocity());
-			omega.set(rootShip.getOmega());
-			scaling.set(selfTransform.getShipToWorldScaling());
-			scale = Math.sqrt(scaling.lengthSquared() / 3);
+		if (rootShip == null) {
+			shipWorld.teleportShip(ship, new ShipTeleportDataImpl(position, rotation, velocity, omega, dimension, 1.0));
+			return;
 		}
-		shipWorld.teleportShip(ship, new ShipTeleportDataImpl(position, rotation, velocity, omega, dimension, scale));
 
-		// fix new ship's velocity and omega
-		if (velocity.lengthSquared() != 0 || omega.lengthSquared() != 0) {
-			final ServerShipTransformProvider oldProvider = ship.getTransformProvider();
-			ship.setTransformProvider(new ServerShipTransformProvider() {
-				@Override
-				public NextTransformAndVelocityData provideNextTransformAndVelocity(final ShipTransform transform, final ShipTransform nextTransform) {
-					if (!transform.getPositionInWorld().equals(nextTransform.getPositionInWorld()) || !transform.getShipToWorldRotation().equals(nextTransform.getShipToWorldRotation())) {
-						ship.setTransformProvider(oldProvider);
-						return null;
-					}
-					if (rootShip != null) {
-						final ShipTransform selfTransform2 = rootShip.getTransform();
-						selfTransform2.getShipToWorld().transformPosition(absPosition, position);
-						rotation.set(selfTransform2.getShipToWorldRotation());
-						velocity.set(rootShip.getVelocity());
-						omega.set(rootShip.getOmega());
-						scaling.set(selfTransform2.getShipToWorldScaling());
-					}
-					return new NextTransformAndVelocityData(new ShipTransformImpl(position, nextTransform.getPositionInShip(), rotation, scaling), velocity, omega);
+		final ShipTransform selfTransform = rootShip.getTransform();
+		selfTransform.getShipToWorld().transformPosition(position);
+		rotation.set(selfTransform.getShipToWorldRotation());
+		velocity.set(rootShip.getVelocity());
+		omega.set(rootShip.getOmega());
+		scaling.set(selfTransform.getShipToWorldScaling());
+
+		// TODO: for some reason the reposition can only be correct after 3 physics ticks. Investigate why and find a solution.
+
+		final ServerShipTransformProvider oldProvider = ship.getTransformProvider();
+		ship.setTransformProvider(new ServerShipTransformProvider() {
+			private int count = 0;
+
+			@Override
+			public NextTransformAndVelocityData provideNextTransformAndVelocity(final ShipTransform transform, final ShipTransform nextTransform) {
+				this.count++;
+				if (this.count <= 3) {
+					return null;
 				}
-			});
-		}
+				ship.setTransformProvider(oldProvider);
+				position.set(nextTransform.getPositionInShip()).sub(shipAnchor).add(targetAnchor);
+				if (rootShip != null) {
+					final ShipTransform selfTransform2 = rootShip.getTransform();
+					selfTransform2.getShipToWorld().transformPosition(position);
+					rotation.set(selfTransform2.getShipToWorldRotation());
+					velocity.set(rootShip.getVelocity());
+					omega.set(rootShip.getOmega());
+					scaling.set(selfTransform2.getShipToWorldScaling());
+				}
+				final ShipTransform newTransform = new ShipTransformImpl(position, shipAnchor, rotation, scaling);
+				return new NextTransformAndVelocityData(newTransform, velocity, omega);
+			}
+		});
 	}
 }

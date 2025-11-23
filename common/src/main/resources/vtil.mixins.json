@@ -25,7 +25,8 @@
 		"minecraft.position_based_conn.MixinTrapDoorBlock",
 		"valkyrienskies.MixinEntityDragger",
 		"valkyrienskies.MixinShipObjectServerWorld",
-		"valkyrienskies.MixinShipSelector"
+		"valkyrienskies.MixinShipSelector",
+		"valkyrienskies.MixinVSNetworking"
 	],
 	"client": [
 	],

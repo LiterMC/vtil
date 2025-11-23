@@ -20,21 +20,20 @@ import java.util.Set;
 public final class ShipConnectivityApi {
 	private ShipConnectivityApi() {}
 
-	public static Set<ServerShip> getAllConnectedShips(final long shipId) {
+	public static Set<ServerShip> getAllConnectedShipsAndSelf(final long shipId) {
 		final ServerShipWorldCore world = VSGameUtilsKt.getShipObjectWorld(PlatformHelper.get().getCurrentServer());
-		final Collection<VSConstraint> constraints = ((ShipObjectServerWorldAccessor) (world)).vtil$getConstraints(shipId);
-		if (constraints.isEmpty()) {
-			return Collections.emptySet();
-		}
 		final QueryableShipData<ServerShip> shipQuery = world.getAllShips();
 		final ServerShip startShip = shipQuery.getById(shipId);
+		final Collection<VSConstraint> constraints = ((ShipObjectServerWorldAccessor) (world)).vtil$getConstraints(shipId);
+		if (constraints.isEmpty()) {
+			return Set.of(startShip);
+		}
 		final Set<ServerShip> ships = new HashSet<>(constraints.size() + 1);
 		ships.add(startShip);
 		for (final VSConstraint constraint : constraints) {
 			addConnectedShips(world, shipQuery, shipQuery.getById(constraint.getShipId0()), ships);
 			addConnectedShips(world, shipQuery, shipQuery.getById(constraint.getShipId1()), ships);
 		}
-		ships.remove(startShip);
 		return ships;
 	}
 
