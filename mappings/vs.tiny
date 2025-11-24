@@ -1,12 +1,12 @@
 tiny	2	0	shadow	named
 c	org/valkyrienskies/core/impl/shadow/CR	org/valkyrienskies/core/impl/todo/ChunkTrackingInfo
-f	org/valkyrienskies/core/impl/shadow/CR	a	Ljava/util/Map;	playersToShipsWatchingMap	Ljava/util/Map;
-f	org/valkyrienskies/core/impl/shadow/CR	f	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;	shipsToPlayersWatchingMap	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;
-f	org/valkyrienskies/core/impl/shadow/CR	b	Ljava/util/Map;	playersToShipsNewlyWatchingMap	Ljava/util/Map;
-f	org/valkyrienskies/core/impl/shadow/CR	c	Ljava/util/Map;	playersToShipsNoLongerWatchingMap	Ljava/util/Map;
-f	org/valkyrienskies/core/impl/shadow/CR	g	Ljava/util/Set;	shipsToLoad	Ljava/util/Set;
-f	org/valkyrienskies/core/impl/shadow/CR	d	Ljava/util/Set;	shipsToUnload	Ljava/util/Set;
-f	org/valkyrienskies/core/impl/shadow/CR	e	Ljava/util/Set;	newPlayers	Ljava/util/Set;
+	f	Ljava/util/Map;	a	playersToShipsWatchingMap
+	f	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;	f	shipsToPlayersWatchingMap
+	f	Ljava/util/Map;	b	playersToShipsNewlyWatchingMap
+	f	Ljava/util/Map;	c	playersToShipsNoLongerWatchingMap
+	f	Ljava/util/Set;	g	shipsToLoad
+	f	Ljava/util/Set;	d	shipsToUnload
+	f	Ljava/util/Set;	e	newPlayers
 
 c	org/valkyrienskies/core/impl/shadow/DL	org/valkyrienskies/core/impl/util/AerodynamicUtilsImpl
 
@@ -14,68 +14,74 @@ c	org/valkyrienskies/core/impl/shadow/DN	org/valkyrienskies/core/impl/todo/Block
 
 c	org/valkyrienskies/core/impl/shadow/dt	org/valkyrienskies/core/impl/todo/RegexValidator
 
+c	org/valkyrienskies/core/impl/shadow/DW	org/valkyrienskies/core/impl/game/connectivity/ConnectivityHandler
+
 c	org/valkyrienskies/core/impl/shadow/Ej	org/valkyrienskies/core/impl/game/ships/DummyShipWorldServer
 
 c	org/valkyrienskies/core/impl/shadow/EM	org/valkyrienskies/core/impl/todo/ShipWorldStates
-f	org/valkyrienskies/core/impl/shadow/EM	b	Lorg/valkyrienskies/core/impl/networking/simple/SimplePacketNetworking;	simplePackets	Lorg/valkyrienskies/core/impl/networking/simple/SimplePacketNetworking;
-f	org/valkyrienskies/core/impl/shadow/EM	d	Ljava/lang/Iterable;	players	Ljava/lang/Iterable;
-f	org/valkyrienskies/core/impl/shadow/EM	g	Lcom/google/common/collect/ImmutableMap;	playerTrackingShips	Lcom/google/common/collect/ImmutableMap;
-f	org/valkyrienskies/core/impl/shadow/EM	h	Lcom/google/common/collect/ImmutableMap;	playerTrackingPhysicsEntities	Lcom/google/common/collect/ImmutableMap;
+	f	Lorg/valkyrienskies/core/impl/networking/simple/SimplePacketNetworking;	simplePackets	b
+	f	Ljava/lang/Iterable;	players	d
+	f	Lcom/google/common/collect/ImmutableMap;	playerTrackingShips	g
+	f	Lcom/google/common/collect/ImmutableMap;	playerTrackingPhysicsEntities	h
+
+c	org/valkyrienskies/core/impl/shadow/Em	org/valkyrienskies/core/impl/game/ships/QueryableShipDataImpl
 
 c	org/valkyrienskies/core/impl/shadow/Eo	org/valkyrienskies/core/impl/game/ships/ShipObject
 
 c	org/valkyrienskies/core/impl/shadow/Ep	org/valkyrienskies/core/impl/game/ships/ShipObjectClient
 
 c	org/valkyrienskies/core/impl/shadow/Eq	org/valkyrienskies/core/impl/game/ships/ShipObjectServer
-f	org/valkyrienskies/core/impl/shadow/Eq	b	Lorg/valkyrienskies/core/impl/game/ships/ShipData;	shipData	Lorg/valkyrienskies/core/impl/game/ships/ShipData;
-f	org/valkyrienskies/core/impl/shadow/Eq	c	I	shipTeleportId	I
-f	org/valkyrienskies/core/impl/shadow/Eq	d	Lorg/valkyrienskies/core/impl/shadow/Fn;	shipDataChannel	Lorg/valkyrienskies/core/impl/networking/delta/DeltaEncodedChannelServerTCP;
-f	org/valkyrienskies/core/impl/shadow/Eq	e	Ljava/util/Map;	physicsListeners	Ljava/util/Map;
-f	org/valkyrienskies/core/impl/shadow/Eq	f	Ljava/util/Map;	serverTickListeners	Ljava/util/Map;
-m	org/valkyrienskies/core/impl/shadow/Eq	c	()Lorg/valkyrienskies/core/impl/game/ships/ShipData;	getShipData	()Lorg/valkyrienskies/core/impl/game/ships/ShipData;
+	f	Lorg/valkyrienskies/core/impl/game/ships/ShipData;	b	shipData
+	f	I	c	shipTeleportId
+	f	Lorg/valkyrienskies/core/impl/shadow/Fn;	d	shipDataChannel
+	f	Ljava/util/Map;	e	physicsListeners
+	f	Ljava/util/Map;	f	serverTickListeners
+	m	()Lorg/valkyrienskies/core/impl/game/ships/ShipData;	c	getShipData
 
 c	org/valkyrienskies/core/impl/shadow/Er	org/valkyrienskies/core/impl/game/ships/ShipObjectServerWorld
-f	org/valkyrienskies/core/impl/shadow/Er	a	Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;	allShips	Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;
-f	org/valkyrienskies/core/impl/shadow/Er	b	Lorg/valkyrienskies/core/impl/game/ChunkAllocatorProvider;	chunkAllocatorProvider	Lorg/valkyrienskies/core/impl/game/ChunkAllocatorProvider;
-f	org/valkyrienskies/core/impl/shadow/Er	z	Lorg/valkyrienskies/core/impl/shadow/DN;	blockTypes	Lorg/valkyrienskies/core/impl/todo/BlockTypes;
-f	org/valkyrienskies/core/impl/shadow/Er	d	Ljava/util/Map;	dimensionInfos	Ljava/util/Map;
-f	org/valkyrienskies/core/impl/shadow/Er	D	Ljava/util/Set;	lastTickPlayers	Ljava/util/Set;
-f	org/valkyrienskies/core/impl/shadow/Er	E	Ljava/util/Set;	players	Ljava/util/Set;
-f	org/valkyrienskies/core/impl/shadow/Er	F	Lorg/valkyrienskies/core/internal/VsiGameServer;	gameServer	Lorg/valkyrienskies/core/internal/VsiGameServer;
-f	org/valkyrienskies/core/impl/shadow/Er	G	Lorg/valkyrienskies/core/impl/shadow/Em;	loadedShips	Lorg/valkyrienskies/core/impl/shadow/Em;
-f	org/valkyrienskies/core/impl/shadow/Er	f	Ljava/util/Map;	loadedPhysicsEntities	Ljava/util/Map;
-f	org/valkyrienskies/core/impl/shadow/Er	g	Ljava/util/Map;	dimensionToGroundBodyId	Ljava/util/Map;
-f	org/valkyrienskies/core/impl/shadow/Er	h	Ljava/util/ArrayList;	dimensionsAddedThisTick	Ljava/util/ArrayList;
-f	org/valkyrienskies/core/impl/shadow/Er	i	Ljava/util/ArrayList;	dimensionsRemovedThisTick	Ljava/util/ArrayList;
-f	org/valkyrienskies/core/impl/shadow/Er	i	Ljava/util/ArrayList;	voxelShapeUpdatesList	Ljava/util/ArrayList;
-f	org/valkyrienskies/core/impl/shadow/Er	H	Ljava/util/Set;	disabledCollisionPairs	Ljava/util/Set;
-f	org/valkyrienskies/core/impl/shadow/Er	k	Ljava/util/List;	newShipObjects	Ljava/util/List;
-f	org/valkyrienskies/core/impl/shadow/Er	l	Ljava/util/List;	newPhysicsEntities	Ljava/util/List;
-f	org/valkyrienskies/core/impl/shadow/Er	m	Ljava/util/List;	updatedShipObjects	Ljava/util/List;
-f	org/valkyrienskies/core/impl/shadow/Er	n	Ljava/util/List;	updatedPhysicsEntities	Ljava/util/List;
-f	org/valkyrienskies/core/impl/shadow/Er	o	Ljava/util/List;	deletedShipObjects	Ljava/util/List;
-f	org/valkyrienskies/core/impl/shadow/Er	p	Ljava/util/List;	deletedPhysicsEntities	Ljava/util/List;
-f	org/valkyrienskies/core/impl/shadow/Er	q	Ljava/util/List;	lastTickDeletedShipObjects	Ljava/util/List;
-f	org/valkyrienskies/core/impl/shadow/Er	r	Ljava/util/List;	jointsCreatedThisTick	Ljava/util/List;
-f	org/valkyrienskies/core/impl/shadow/Er	s	Ljava/util/Map;	joints	Ljava/util/Map;
-f	org/valkyrienskies/core/impl/shadow/Er	t	Ljava/util/List;	jointsDeletedThisTick	Ljava/util/List;
-f	org/valkyrienskies/core/impl/shadow/Er	u	Ljava/util/List;	disabledCollisionPairsThisTick	Ljava/util/List;
-f	org/valkyrienskies/core/impl/shadow/Er	v	Ljava/util/List;	enabledCollisionPairsThisTick	Ljava/util/List;
-f	org/valkyrienskies/core/impl/shadow/Er	I	Lorg/valkyrienskies/core/impl/shadow/Fe;	udpServer	Lorg/valkyrienskies/core/impl/networking/UdpServerImpl;
-f	org/valkyrienskies/core/impl/shadow/Er	w	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;	shipToVoxelUpdates	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;
-f	org/valkyrienskies/core/impl/shadow/Er	x	Lorg/valkyrienskies/core/impl/shadow/DL;	aerodynamicUtils	Lorg/valkyrienskies/core/impl/util/AerodynamicUtilsImpl;
-m	org/valkyrienskies/core/impl/shadow/Er	a	()Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;	getAllShips	()Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;
-m	org/valkyrienskies/core/impl/shadow/Er	b	()Lorg/valkyrienskies/core/impl/game/ChunkAllocatorProvider;	getChunkAllocatorProvider	()Lorg/valkyrienskies/core/impl/game/ChunkAllocatorProvider;
-m	org/valkyrienskies/core/impl/shadow/Er	k	()Lorg/valkyrienskies/core/impl/program/VSCoreInternal;	getVSCore	()Lorg/valkyrienskies/core/impl/program/VSCoreInternal;
-m	org/valkyrienskies/core/impl/shadow/Er	l	()Ljava/util/Set;	getLastTickPlayers	()Ljava/util/Set;
-m	org/valkyrienskies/core/impl/shadow/Er	c	()Lcom/google/common/collect/ImmutableMap;	getPlayersToTrackedShips	()Lcom/google/common/collect/ImmutableMap;
-m	org/valkyrienskies/core/impl/shadow/Er	d	()Lcom/google/common/collect/ImmutableMap;	getPlayersToTrackedPhysicsEntities	()Lcom/google/common/collect/ImmutableMap;
-m	org/valkyrienskies/core/impl/shadow/Er	e	()Ljava/util/Map;	getLoadedPhysicsEntities	()Ljava/util/Map;
-m	org/valkyrienskies/core/impl/shadow/Er	f	()Ljava/util/Map;	getDimensionInfos	()Ljava/util/Map;
-m	org/valkyrienskies/core/impl/shadow/Er	g	()Lorg/valkyrienskies/core/impl/shadow/DL;	getAerodynamicUtils	()Lorg/valkyrienskies/core/impl/util/AerodynamicUtilsImpl;
-m	org/valkyrienskies/core/impl/shadow/Er	h	()V	postTick	()V
-m	org/valkyrienskies/core/impl/shadow/Er	a	(Lorg/joml/Vector3ic;ZDLjava/lang/String;)Ljava/util/concurrent/CompletableFuture;	createShipAtBlockAsync	(Lorg/joml/Vector3ic;ZDLjava/lang/String;)Ljava/util/concurrent/CompletableFuture;
-m	org/valkyrienskies/core/impl/shadow/Er	b	(Lorg/joml/Vector3ic;ZDLjava/lang/String;)Lorg/valkyrienskies/core/impl/game/ships/ShipData;	createShipAtBlock	(Lorg/joml/Vector3ic;ZDLjava/lang/String;)Lorg/valkyrienskies/core/impl/game/ships/ShipData;
+	f	Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;	a	allShips
+	f	Lorg/valkyrienskies/core/impl/game/ChunkAllocatorProvider;	b	chunkAllocatorProvider
+	f	Lorg/valkyrienskies/core/impl/shadow/Ez;	c	loadManager
+	f	Lorg/valkyrienskies/core/impl/shadow/DN;	z	blockTypes
+	f	Ljava/util/Map;	d	dimensionInfos
+	f	Ljava/util/Set;	D	lastTickPlayers
+	f	Ljava/util/Set;	E	players
+	f	Lorg/valkyrienskies/core/internal/VsiGameServer;	F	gameServer
+	f	Lorg/valkyrienskies/core/impl/shadow/Em;	G	loadedShips
+	f	Ljava/util/Map;	f	loadedPhysicsEntities
+	f	Ljava/util/Map;	g	dimensionToGroundBodyId
+	f	Ljava/util/ArrayList;	h	dimensionsAddedThisTick
+	f	Ljava/util/ArrayList;	i	dimensionsRemovedThisTick
+	f	Ljava/util/ArrayList;	i	voxelShapeUpdatesList
+	f	Ljava/util/Set;	H	disabledCollisionPairs
+	f	Ljava/util/List;	k	newShipObjects
+	f	Ljava/util/List;	l	newPhysicsEntities
+	f	Ljava/util/List;	m	updatedShipObjects
+	f	Ljava/util/List;	n	updatedPhysicsEntities
+	f	Ljava/util/List;	o	deletedShipObjects
+	f	Ljava/util/List;	p	deletedPhysicsEntities
+	f	Ljava/util/List;	q	lastTickDeletedShipObjects
+	f	Ljava/util/List;	r	jointsCreatedThisTick
+	f	Ljava/util/Map;	s	joints
+	f	Ljava/util/List;	t	jointsDeletedThisTick
+	f	Ljava/util/List;	u	disabledCollisionPairsThisTick
+	f	Ljava/util/List;	v	enabledCollisionPairsThisTick
+	f	Lorg/valkyrienskies/core/impl/shadow/Fe;	I	udpServer
+	f	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;	w	shipToVoxelUpdates
+	f	Lorg/valkyrienskies/core/impl/shadow/DL;	x	aerodynamicUtils
+	m	(Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;Lorg/valkyrienskies/core/impl/game/ChunkAllocatorProvider;Lorg/valkyrienskies/core/impl/shadow/Ez;Lorg/valkyrienskies/core/impl/shadow/Fg;Lorg/valkyrienskies/core/impl/shadow/DN;Ljava/util/Map;Lorg/valkyrienskies/core/impl/shadow/DW;Lorg/valkyrienskies/core/impl/game/ships/ShipData$Factory;Ljavax/inject/Provider;)V	<init>	<init>
+	m	()Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;	a	getAllShips
+	m	()Lorg/valkyrienskies/core/impl/game/ChunkAllocatorProvider;	b	getChunkAllocatorProvider
+	m	()Lorg/valkyrienskies/core/impl/program/VSCoreInternal;	k	getVSCore
+	m	()Ljava/util/Set;	l	getLastTickPlayers
+	m	()Lcom/google/common/collect/ImmutableMap;	c	getPlayersToTrackedShips
+	m	()Lcom/google/common/collect/ImmutableMap;	d	getPlayersToTrackedPhysicsEntities
+	m	()Ljava/util/Map;	e	getLoadedPhysicsEntities
+	m	()Ljava/util/Map;	f	getDimensionInfos
+	m	()Lorg/valkyrienskies/core/impl/shadow/DL;	g	getAerodynamicUtils
+	m	()V	h	postTick
+	m	(Lorg/joml/Vector3ic;ZDLjava/lang/String;)Ljava/util/concurrent/CompletableFuture;	a	createShipAtBlockAsync
+	m	(Lorg/joml/Vector3ic;ZDLjava/lang/String;)Lorg/valkyrienskies/core/impl/game/ships/ShipData;	b	createShipAtBlock
 
 c	org/valkyrienskies/core/impl/shadow/Et	org/valkyrienskies/core/impl/game/ships/ShipObjectWorld
 
@@ -83,16 +89,18 @@ c	org/valkyrienskies/core/impl/shadow/EW	org/valkyrienskies/core/impl/networking
 
 c	org/valkyrienskies/core/impl/shadow/EY	org/valkyrienskies/core/impl/networking/PacketType
 
+c	org/valkyrienskies/core/impl/shadow/Ez	org/valkyrienskies/core/impl/todo/LoadManager
+
 c	org/valkyrienskies/core/impl/shadow/Fe	org/valkyrienskies/core/impl/networking/UdpServerImpl
 
 c	org/valkyrienskies/core/impl/shadow/Fg	org/valkyrienskies/core/impl/networking/VSNetworking
-f	org/valkyrienskies/core/impl/shadow/Fg	a	Lorg/valkyrienskies/core/impl/shadow/EW;	udp	Lorg/valkyrienskies/core/impl/networking/NetworkChannel;
-f	org/valkyrienskies/core/impl/shadow/Fg	b	Lorg/valkyrienskies/core/impl/shadow/EW;	tcp	Lorg/valkyrienskies/core/impl/networking/NetworkChannel;
-f	org/valkyrienskies/core/impl/shadow/Fg	c	Lorg/valkyrienskies/core/impl/networking/simple/SimplePacketNetworking;	simplePackets	Lorg/valkyrienskies/core/impl/networking/simple/SimplePacketNetworking;
-f	org/valkyrienskies/core/impl/shadow/Fg	h	Lorg/valkyrienskies/core/impl/shadow/EY;	tcp_udp_fallback	Lorg/valkyrienskies/core/impl/networking/PacketType;
-f	org/valkyrienskies/core/impl/shadow/Fg	d	Z	clientUsesUDP	Z
-f	org/valkyrienskies/core/impl/shadow/Fg	e	Z	serverUsesUDP	Z
-f	org/valkyrienskies/core/impl/shadow/Fg	f	Lorg/valkyrienskies/core/api/event/RegisteredListener;	prevStateHandler	Lorg/valkyrienskies/core/api/event/RegisteredListener;
+	f	Lorg/valkyrienskies/core/impl/shadow/EW;	a	udp
+	f	Lorg/valkyrienskies/core/impl/shadow/EW;	b	tcp
+	f	Lorg/valkyrienskies/core/impl/networking/simple/SimplePacketNetworking;	c	simplePackets
+	f	Lorg/valkyrienskies/core/impl/shadow/EY;	h	tcp_udp_fallback
+	f	Z	d	clientUsesUDP
+	f	Z	e	serverUsesUDP
+	f	Lorg/valkyrienskies/core/api/event/RegisteredListener;	f	prevStateHandler
 
 c	org/valkyrienskies/core/impl/shadow/FH	org/valkyrienskies/core/impl/pipelines/VSPhysicsPipelineStage
 
@@ -103,51 +111,51 @@ c	org/valkyrienskies/core/impl/shadow/FM	org/valkyrienskies/core/impl/todo/Dummy
 c	org/valkyrienskies/core/impl/shadow/Fn	org/valkyrienskies/core/impl/networking/delta/DeltaEncodedChannelServerTCP
 
 c	org/valkyrienskies/core/impl/shadow/FO	org/valkyrienskies/core/impl/todo/PhysLevelImpl
-f	org/valkyrienskies/core/impl/shadow/FO	e	Ljava/lang/String;	dimensionId	Ljava/lang/String;
-f	org/valkyrienskies/core/impl/shadow/FO	f	Lorg/valkyrienskies/core/impl/shadow/GX;	physWorldRef	Lorg/valkyrienskies/physics_api/PhysicsWorldReference;
-f	org/valkyrienskies/core/impl/shadow/FO	g	Lkotlin/jvm/functions/Function0;	physShipsProvider	Lkotlin/jvm/functions/Function0;
-f	org/valkyrienskies/core/impl/shadow/FO	h	Lorg/valkyrienskies/core/impl/shadow/FH;	pipeline	Lorg/valkyrienskies/core/impl/pipelines/VSPhysicsPipelineStage;
-f	org/valkyrienskies/core/impl/shadow/FO	i	Lorg/valkyrienskies/core/impl/shadow/Er;	serverWorld	Lorg/valkyrienskies/core/impl/game/ships/ShipObjectServerWorld;
-f	org/valkyrienskies/core/impl/shadow/FO	g	Lkotlin/jvm/functions/Function1;	physShipProvider	Lkotlin/jvm/functions/Function1;
-f	org/valkyrienskies/core/impl/shadow/FO	k	Ljava/util/Set;	disabledCollisionPairs	Ljava/util/Set;
-f	org/valkyrienskies/core/impl/shadow/FO	b	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;	shipTodisabledCollisionPairs	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;
-f	org/valkyrienskies/core/impl/shadow/FO	c	Ljava/util/Map;	joints	Ljava/util/Map;
-f	org/valkyrienskies/core/impl/shadow/FO	l	Ljava/util/Map;	shipToJointIds	Ljava/util/Map;
-f	org/valkyrienskies/core/impl/shadow/FO	d	Ljava/util/HashSet;	loadedShipIds	Ljava/util/HashSet;
-m	org/valkyrienskies/core/impl/shadow/FO	j	()Ljava/util/Map;	getJoints	()Ljava/util/Map;
+	f	Ljava/lang/String;	e	dimensionId
+	f	Lorg/valkyrienskies/core/impl/shadow/GX;	f	physWorldRef
+	f	Lkotlin/jvm/functions/Function0;	g	physShipsProvider
+	f	Lorg/valkyrienskies/core/impl/shadow/FH;	h	pipeline
+	f	Lorg/valkyrienskies/core/impl/shadow/Er;	i	serverWorld
+	f	Lkotlin/jvm/functions/Function1;	g	physShipProvider
+	f	Ljava/util/Set;	k	disabledCollisionPairs
+	f	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;	b	shipTodisabledCollisionPairs
+	f	Ljava/util/Map;	c	joints
+	f	Ljava/util/Map;	l	shipToJointIds
+	f	Ljava/util/HashSet;	d	loadedShipIds
+	m	()Ljava/util/Map;	j	getJoints
 
 c	org/valkyrienskies/core/impl/shadow/Fp	org/valkyrienskies/core/impl/networking/simple/SimplePacketNetworkingImpl
 
 c	org/valkyrienskies/core/impl/shadow/Fq	org/valkyrienskies/core/impl/networking/simple/SimplePacketNetworking_Factory
 
 c	org/valkyrienskies/core/impl/shadow/Fw	org/valkyrienskies/core/impl/todo/DisabledCollisionPair
-f	org/valkyrienskies/core/impl/shadow/Fw	b	J	ship0Id	J
-f	org/valkyrienskies/core/impl/shadow/Fw	c	J	ship1Id	J
-m	org/valkyrienskies/core/impl/shadow/Fw	a	()J	getShip0Id	()J
-m	org/valkyrienskies/core/impl/shadow/Fw	b	()J	getShip1Id	()J
+	f	J	b	ship0Id
+	f	J	c	ship1Id
+	m	()J	a	getShip0Id
+	m	()J	b	getShip1Id
 
 c	org/valkyrienskies/core/impl/shadow/h	org/valkyrienskies/core/impl/todo/TimezoneOffset
-f	org/valkyrienskies/core/impl/shadow/h	b	I	hours	I
-f	org/valkyrienskies/core/impl/shadow/h	c	I	minutes	I
+	f	I	b	hours
+	f	I	c	minutes
 
 c	org/valkyrienskies/core/impl/shadow/HE	org/valkyrienskies/physics_api/joints/JointAndId
 
 c	org/valkyrienskies/core/impl/shadow/Ie	org/valkyrienskies/core/impl/todo/DeleteVoxelShapeUpdate2
-f	org/valkyrienskies/core/impl/shadow/Ie	a	I	regionX	I
-f	org/valkyrienskies/core/impl/shadow/Ie	b	I	regionY	I
-f	org/valkyrienskies/core/impl/shadow/Ie	c	I	regionZ	I
+	f	I	a	regionX
+	f	I	b	regionY
+	f	I	c	regionZ
 
 c	org/valkyrienskies/core/impl/shadow/Ig	org/valkyrienskies/core/impl/todo/EmptyVoxelShapeUpdate2
-f	org/valkyrienskies/core/impl/shadow/Ig	a	I	regionX	I
-f	org/valkyrienskies/core/impl/shadow/Ig	b	I	regionY	I
-f	org/valkyrienskies/core/impl/shadow/Ig	c	I	regionZ	I
-f	org/valkyrienskies/core/impl/shadow/Ig	d	Z	overwriteExistingVoxels	Z
+	f	I	a	regionX
+	f	I	b	regionY
+	f	I	c	regionZ
+	f	Z	d	overwriteExistingVoxels
 
 c	org/valkyrienskies/core/impl/shadow/Ij	org/valkyrienskies/physics_api/voxel/updates/SparseVoxelShapeUpdate2
-f	org/valkyrienskies/core/impl/shadow/Ij	b	I	regionX	I
-f	org/valkyrienskies/core/impl/shadow/Ij	c	I	regionY	I
-f	org/valkyrienskies/core/impl/shadow/Ij	d	I	regionZ	I
-f	org/valkyrienskies/core/impl/shadow/Ij	e	Lit/unimi/dsi/fastutil/shorts/ShortArrayList;	updatesPositions	Lit/unimi/dsi/fastutil/shorts/ShortArrayList;
-f	org/valkyrienskies/core/impl/shadow/Ij	f	Lit/unimi/dsi/fastutil/ints/IntArrayList;	updatesTypes	Lit/unimi/dsi/fastutil/ints/IntArrayList;
+	f	I	b	regionX
+	f	I	c	regionY
+	f	I	d	regionZ
+	f	Lit/unimi/dsi/fastutil/shorts/ShortArrayList;	e	updatesPositions
+	f	Lit/unimi/dsi/fastutil/ints/IntArrayList;	f	updatesTypes
 
 c	org/valkyrienskies/core/impl/shadow/GX	org/valkyrienskies/physics_api/PhysicsWorldReference
