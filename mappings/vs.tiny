@@ -16,11 +16,23 @@ c	org/valkyrienskies/core/impl/shadow/dt	org/valkyrienskies/core/impl/todo/Regex
 
 c	org/valkyrienskies/core/impl/shadow/Ej	org/valkyrienskies/core/impl/game/ships/DummyShipWorldServer
 
+c	org/valkyrienskies/core/impl/shadow/EM	org/valkyrienskies/core/impl/todo/ShipWorldStates
+f	org/valkyrienskies/core/impl/shadow/EM	b	Lorg/valkyrienskies/core/impl/networking/simple/SimplePacketNetworking;	simplePackets	Lorg/valkyrienskies/core/impl/networking/simple/SimplePacketNetworking;
+f	org/valkyrienskies/core/impl/shadow/EM	d	Ljava/lang/Iterable;	players	Ljava/lang/Iterable;
+f	org/valkyrienskies/core/impl/shadow/EM	g	Lcom/google/common/collect/ImmutableMap;	playerTrackingShips	Lcom/google/common/collect/ImmutableMap;
+f	org/valkyrienskies/core/impl/shadow/EM	h	Lcom/google/common/collect/ImmutableMap;	playerTrackingPhysicsEntities	Lcom/google/common/collect/ImmutableMap;
+
 c	org/valkyrienskies/core/impl/shadow/Eo	org/valkyrienskies/core/impl/game/ships/ShipObject
 
 c	org/valkyrienskies/core/impl/shadow/Ep	org/valkyrienskies/core/impl/game/ships/ShipObjectClient
 
 c	org/valkyrienskies/core/impl/shadow/Eq	org/valkyrienskies/core/impl/game/ships/ShipObjectServer
+f	org/valkyrienskies/core/impl/shadow/Eq	b	Lorg/valkyrienskies/core/impl/game/ships/ShipData;	shipData	Lorg/valkyrienskies/core/impl/game/ships/ShipData;
+f	org/valkyrienskies/core/impl/shadow/Eq	c	I	shipTeleportId	I
+f	org/valkyrienskies/core/impl/shadow/Eq	d	Lorg/valkyrienskies/core/impl/shadow/Fn;	shipDataChannel	Lorg/valkyrienskies/core/impl/networking/delta/DeltaEncodedChannelServerTCP;
+f	org/valkyrienskies/core/impl/shadow/Eq	e	Ljava/util/Map;	physicsListeners	Ljava/util/Map;
+f	org/valkyrienskies/core/impl/shadow/Eq	f	Ljava/util/Map;	serverTickListeners	Ljava/util/Map;
+m	org/valkyrienskies/core/impl/shadow/Eq	c	()Lorg/valkyrienskies/core/impl/game/ships/ShipData;	getShipData	()Lorg/valkyrienskies/core/impl/game/ships/ShipData;
 
 c	org/valkyrienskies/core/impl/shadow/Er	org/valkyrienskies/core/impl/game/ships/ShipObjectServerWorld
 f	org/valkyrienskies/core/impl/shadow/Er	a	Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;	allShips	Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;
@@ -67,12 +79,6 @@ m	org/valkyrienskies/core/impl/shadow/Er	b	(Lorg/joml/Vector3ic;ZDLjava/lang/Str
 
 c	org/valkyrienskies/core/impl/shadow/Et	org/valkyrienskies/core/impl/game/ships/ShipObjectWorld
 
-c	org/valkyrienskies/core/impl/shadow/EM	org/valkyrienskies/core/impl/todo/ShipWorldStates
-f	org/valkyrienskies/core/impl/shadow/EM	b	Lorg/valkyrienskies/core/impl/networking/simple/SimplePacketNetworking;	simplePackets	Lorg/valkyrienskies/core/impl/networking/simple/SimplePacketNetworking;
-f	org/valkyrienskies/core/impl/shadow/EM	d	Ljava/lang/Iterable;	players	Ljava/lang/Iterable;
-f	org/valkyrienskies/core/impl/shadow/EM	g	Lcom/google/common/collect/ImmutableMap;	playerTrackingShips	Lcom/google/common/collect/ImmutableMap;
-f	org/valkyrienskies/core/impl/shadow/EM	h	Lcom/google/common/collect/ImmutableMap;	playerTrackingPhysicsEntities	Lcom/google/common/collect/ImmutableMap;
-
 c	org/valkyrienskies/core/impl/shadow/EW	org/valkyrienskies/core/impl/networking/NetworkChannel
 
 c	org/valkyrienskies/core/impl/shadow/EY	org/valkyrienskies/core/impl/networking/PacketType
@@ -93,6 +99,8 @@ c	org/valkyrienskies/core/impl/shadow/FH	org/valkyrienskies/core/impl/pipelines/
 c	org/valkyrienskies/core/impl/shadow/FK	org/valkyrienskies/core/impl/todo/VsPipelineImpl
 
 c	org/valkyrienskies/core/impl/shadow/FM	org/valkyrienskies/core/impl/todo/DummyPhysLevel
+
+c	org/valkyrienskies/core/impl/shadow/Fn	org/valkyrienskies/core/impl/networking/delta/DeltaEncodedChannelServerTCP
 
 c	org/valkyrienskies/core/impl/shadow/FO	org/valkyrienskies/core/impl/todo/PhysLevelImpl
 f	org/valkyrienskies/core/impl/shadow/FO	e	Ljava/lang/String;	dimensionId	Ljava/lang/String;
