@@ -237,7 +237,7 @@ public final class ShipAllocator extends SavedData {
 				ship.saveAttachment(clazz, null);
 			}
 		}
-		for (final Integer cid : ((ShipObjectServerWorldAccessor) (world)).vtil$getConstraintIds(ship.getId())) {
+		for (final Integer cid : Set.copyOf(((ShipObjectServerWorldAccessor) (world)).vtil$getConstraintIds(ship.getId()))) {
 			world.removeConstraint(cid);
 		}
 		// TODO: remove disabledCollisionPairs but it is obfuscated

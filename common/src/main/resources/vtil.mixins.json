@@ -24,6 +24,7 @@
 		"minecraft.position_based_conn.MixinSlabBlock",
 		"minecraft.position_based_conn.MixinTrapDoorBlock",
 		"valkyrienskies.MixinEntityDragger",
+		"valkyrienskies.MixinShipObjectServer",
 		"valkyrienskies.MixinShipObjectServerWorld",
 		"valkyrienskies.MixinShipSelector",
 		"valkyrienskies.MixinVSNetworking"

@@ -363,19 +363,17 @@ public final class AssembleApi {
 		final Vector3d omega = new Vector3d();
 		final Vector3d scaling = new Vector3d(1);
 
-		if (rootShip == null) {
-			shipWorld.teleportShip(ship, new ShipTeleportDataImpl(position, rotation, velocity, omega, dimension, 1.0));
-			return;
+		if (rootShip != null) {
+			final ShipTransform selfTransform = rootShip.getTransform();
+			selfTransform.getShipToWorld().transformPosition(position);
+			rotation.set(selfTransform.getShipToWorldRotation());
+			velocity.set(rootShip.getVelocity());
+			omega.set(rootShip.getOmega());
+			scaling.set(selfTransform.getShipToWorldScaling());
 		}
 
-		final ShipTransform selfTransform = rootShip.getTransform();
-		selfTransform.getShipToWorld().transformPosition(position);
-		rotation.set(selfTransform.getShipToWorldRotation());
-		velocity.set(rootShip.getVelocity());
-		omega.set(rootShip.getOmega());
-		scaling.set(selfTransform.getShipToWorldScaling());
-
 		// TODO: for some reason the reposition can only be correct after 3 physics ticks. Investigate why and find a solution.
+		// shipWorld.teleportShip(ship, new ShipTeleportDataImpl(position, rotation, velocity, omega, dimension, scale));
 
 		final ServerShipTransformProvider oldProvider = ship.getTransformProvider();
 		ship.setTransformProvider(new ServerShipTransformProvider() {
