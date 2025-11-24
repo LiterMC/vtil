@@ -32,14 +32,14 @@ import org.valkyrienskies.core.api.ships.LoadedServerShip;
 import org.valkyrienskies.core.api.ships.QueryableShipData;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
-import org.valkyrienskies.core.apigame.ShipTeleportData;
-import org.valkyrienskies.core.apigame.world.IPlayer;
-import org.valkyrienskies.core.apigame.world.ServerShipWorldCore;
 import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl;
 import org.valkyrienskies.core.impl.game.ships.ShipData;
 import org.valkyrienskies.core.impl.game.ships.ShipObjectServer;
 import org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld;
 import org.valkyrienskies.core.impl.networking.impl.PacketShipRemove;
+import org.valkyrienskies.core.internal.ShipTeleportData;
+import org.valkyrienskies.core.internal.world.VsiPlayer;
+import org.valkyrienskies.core.internal.world.VsiServerShipWorld;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 import java.util.ArrayList;
@@ -62,7 +62,7 @@ public final class ShipAllocator extends SavedData {
 	public static final String REUSABLE_SHIP_SLUG_PREFIX = "+reuse+";
 
 	private final MinecraftServer server;
-	private final ServerShipWorldCore shipWorld;
+	private final VsiServerShipWorld shipWorld;
 	private final LongOpenHashSet avaliableShips = new LongOpenHashSet();
 	private final LongOpenHashSet pendingShips = new LongOpenHashSet();
 
@@ -146,7 +146,7 @@ public final class ShipAllocator extends SavedData {
 
 		final ServerShip shipData = this.shipWorld.getAllShips().getById(shipId);
 		if (shipData != null) {
-			final ArrayList<IPlayer> players = new ArrayList<>(8);
+			final ArrayList<VsiPlayer> players = new ArrayList<>(8);
 			((ShipObjectServerWorld) (this.shipWorld)).getPlayersToTrackedShips().forEach((player, tracking) -> {
 				if (tracking.contains(shipData)) {
 					players.add(player);
@@ -155,7 +155,7 @@ public final class ShipAllocator extends SavedData {
 			if (!players.isEmpty()) {
 				((ShipObjectServerWorldAccessor) (this.shipWorld)).vtil$getSimplePackets().sendToClients(
 					new PacketShipRemove(List.of(shipId)),
-					players.toArray(new IPlayer[players.size()])
+					players.toArray(new VsiPlayer[players.size()])
 				);
 			}
 		}
@@ -223,7 +223,7 @@ public final class ShipAllocator extends SavedData {
 		return this.new ServerShipHolder(ship);
 	}
 
-	private static void clearShip(final ServerShipWorldCore world, final ServerLevel level, final ServerShip ship) {
+	private static void clearShip(final VsiServerShipWorld world, final ServerLevel level, final ServerShip ship) {
 		final BlockState AIR = Blocks.AIR.defaultBlockState();
 		ship.setTransformProvider(null);
 		MutableClassToInstanceMap<Object> attachments = null;

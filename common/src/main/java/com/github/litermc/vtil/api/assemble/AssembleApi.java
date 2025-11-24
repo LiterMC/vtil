@@ -34,9 +34,9 @@ import org.joml.primitives.AABBic;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.ServerShipTransformProvider;
 import org.valkyrienskies.core.api.ships.properties.ShipTransform;
-import org.valkyrienskies.core.apigame.world.ServerShipWorldCore;
 import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl;
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl;
+import org.valkyrienskies.core.internal.world.VsiServerShipWorld;
 import org.valkyrienskies.core.util.datastructures.DenseBlockPosSet;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
@@ -71,7 +71,7 @@ public final class AssembleApi {
 		final Set<BlockPos> blocks
 	) {
 		final ShipAllocator allocator = ShipAllocator.get(level.getServer());
-		final ServerShipWorldCore shipWorld = VSGameUtilsKt.getShipObjectWorld(level);
+		final VsiServerShipWorld shipWorld = VSGameUtilsKt.getShipObjectWorld(level);
 		final String levelId = VSGameUtilsKt.getDimensionId(level);
 		final ServerShip rootShip;
 
@@ -157,7 +157,7 @@ public final class AssembleApi {
 	) {
 		final BlockState AIR = Blocks.AIR.defaultBlockState();
 		final ShipAllocator allocator = ShipAllocator.get(level.getServer());
-		final ServerShipWorldCore shipWorld = VSGameUtilsKt.getShipObjectWorld(level);
+		final VsiServerShipWorld shipWorld = VSGameUtilsKt.getShipObjectWorld(level);
 		final String levelId = VSGameUtilsKt.getDimensionId(level);
 		final int chunkLevel = ChunkLevel.byStatus(ChunkStatus.EMPTY);
 		final ServerChunkCache chunkCache = level.getChunkSource();
@@ -349,7 +349,7 @@ public final class AssembleApi {
 	}
 
 	private static void fixShipStatus(
-		final ServerShipWorldCore shipWorld,
+		final VsiServerShipWorld shipWorld,
 		final ServerShip ship,
 		final Vector3dc shipAnchor,
 		final Vector3dc targetAnchor,

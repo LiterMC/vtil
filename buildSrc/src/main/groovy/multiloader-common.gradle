@@ -22,6 +22,10 @@ java {
 	// withJavadocJar()
 }
 
+configurations {
+	remapTool
+}
+
 repositories {
 	mavenCentral()
 
@@ -232,12 +236,52 @@ repositories {
 
 dependencies {
 	minecraft "com.mojang:minecraft:${minecraft_version}"
+
 	mappings(loom.layered {
 		officialMojangMappings()
 		parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
 	})
+
+	remapTool "net.fabricmc:tiny-remapper:0.12.0"
+
+	implementation files("${project.rootDir}/build/remapped/valkyrienskies-api-dev.jar")
+	implementation files("${project.rootDir}/build/remapped/valkyrienskies-impl-dev.jar")
+	implementation files("${project.rootDir}/build/remapped/valkyrienskies-internal-dev.jar")
+	implementation files("${project.rootDir}/build/remapped/valkyrienskies-util-dev.jar")
+
 	implementation("org.joml:joml:1.10.5") { transitive = false }
 	implementation("org.joml:joml-primitives:1.10.0") { transitive = false }
+}
+
+def vsModules = ['api', 'impl', 'internal', 'util']
+
+def vsMappingsFile = file("${project.rootDir}/mappings/vs.tiny")
+
+vsModules.each { module ->
+	def vsCfg = configurations.detachedConfiguration(
+		dependencies.create("org.valkyrienskies.core:${module}:${vs_core_version}")
+	)
+
+	tasks.register("mapVSshadow2named_${module}", JavaExec) {
+		classpath = configurations.remapTool
+		mainClass = "net.fabricmc.tinyremapper.Main"
+		standardOutput = new FileOutputStream("${buildDir}/tiny-remapper.log")
+		args = [
+			vsCfg.first(),
+			file("${project.rootDir}/build/remapped/valkyrienskies-${module}-dev.jar"),
+			vsMappingsFile,
+			'shadow',
+			'named'
+		]
+	}
+}
+
+tasks.register("mapVS") {
+	dependsOn vsModules.collect { "mapVSshadow2named_${it}" }
+}
+
+tasks.named("compileJava") {
+	dependsOn "mapVS"
 }
 
 // Declare capabilities on the outgoing configurations.

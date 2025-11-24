@@ -12,9 +12,9 @@ import org.joml.Vector3dc;
 import org.valkyrienskies.core.api.ships.LoadedServerShip;
 import org.valkyrienskies.core.api.ships.ServerShipTransformProvider;
 import org.valkyrienskies.core.api.ships.properties.ShipTransform;
-import org.valkyrienskies.core.apigame.ShipTeleportData;
-import org.valkyrienskies.core.apigame.world.ServerShipWorldCore;
 import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl;
+import org.valkyrienskies.core.internal.ShipTeleportData;
+import org.valkyrienskies.core.internal.world.VsiServerShipWorld;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public class TeleportUtil {
 	public static void teleportShip(final LoadedServerShip ship, final TeleportData data) {
 		final ServerLevel level = data.level();
 		final String dimension = VSGameUtilsKt.getDimensionId(level);
-		final ServerShipWorldCore world = VSGameUtilsKt.getShipObjectWorld(level);
+		final VsiServerShipWorld world = VSGameUtilsKt.getShipObjectWorld(level);
 
 		final long id = ship.getId();
 

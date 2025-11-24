@@ -26,8 +26,7 @@
 		"valkyrienskies.MixinEntityDragger",
 		"valkyrienskies.MixinShipObjectServer",
 		"valkyrienskies.MixinShipObjectServerWorld",
-		"valkyrienskies.MixinShipSelector",
-		"valkyrienskies.MixinVSNetworking"
+		"valkyrienskies.MixinShipSelector"
 	],
 	"client": [
 	],

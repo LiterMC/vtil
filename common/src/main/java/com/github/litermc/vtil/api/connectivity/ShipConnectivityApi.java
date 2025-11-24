@@ -5,8 +5,8 @@ import com.github.litermc.vtil.platform.PlatformHelper;
 
 import org.valkyrienskies.core.api.ships.QueryableShipData;
 import org.valkyrienskies.core.api.ships.ServerShip;
-import org.valkyrienskies.core.apigame.constraints.VSConstraint;
-import org.valkyrienskies.core.apigame.world.ServerShipWorldCore;
+import org.valkyrienskies.core.internal.constraints.VSConstraint;
+import org.valkyrienskies.core.internal.world.VsiServerShipWorld;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 import java.util.Collection;
@@ -21,7 +21,7 @@ public final class ShipConnectivityApi {
 	private ShipConnectivityApi() {}
 
 	public static Set<ServerShip> getAllConnectedShipsAndSelf(final long shipId) {
-		final ServerShipWorldCore world = VSGameUtilsKt.getShipObjectWorld(PlatformHelper.get().getCurrentServer());
+		final VsiServerShipWorld world = VSGameUtilsKt.getShipObjectWorld(PlatformHelper.get().getCurrentServer());
 		final QueryableShipData<ServerShip> shipQuery = world.getAllShips();
 		final ServerShip startShip = shipQuery.getById(shipId);
 		final Collection<VSConstraint> constraints = ((ShipObjectServerWorldAccessor) (world)).vtil$getConstraints(shipId);
@@ -38,7 +38,7 @@ public final class ShipConnectivityApi {
 	}
 
 	private static void addConnectedShips(
-		final ServerShipWorldCore world,
+		final VsiServerShipWorld world,
 		final QueryableShipData<ServerShip> shipQuery,
 		final ServerShip ship,
 		final Set<ServerShip> result

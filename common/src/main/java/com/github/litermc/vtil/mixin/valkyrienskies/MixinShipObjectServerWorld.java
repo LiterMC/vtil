@@ -7,10 +7,10 @@ import com.github.litermc.vtil.config.Config;
 
 import org.valkyrienskies.core.api.ships.QueryableShipData;
 import org.valkyrienskies.core.api.ships.ServerShip;
-import org.valkyrienskies.core.apigame.constraints.VSConstraint;
 import org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld;
 import org.valkyrienskies.core.impl.networking.VSNetworking;
 import org.valkyrienskies.core.impl.networking.simple.SimplePacketNetworking;
+import org.valkyrienskies.core.internal.joints.VSJoint;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -32,11 +32,11 @@ import java.util.Set;
 
 @Mixin(ShipObjectServerWorld.class)
 public class MixinShipObjectServerWorld implements ShipObjectServerWorldAccessor {
-	@Shadow(remap = false)
+	@Shadow
 	@Final
 	private Map<Integer, VSConstraint> constraints;
 
-	@Shadow(remap = false)
+	@Shadow
 	@Final
 	private Map<Long, Set<Integer>> shipIdToConstraints;
 
