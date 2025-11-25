@@ -36,7 +36,7 @@ public class MixinShipObjectServerWorld implements ShipObjectServerWorldAccessor
 	@Unique
 	private VSNetworking networking;
 
-	@Inject(method = "<init>", at = @At("RETURN"), remap = false)
+	@Inject(method = "<init>", at = @At("RETURN"))
 	public void init(
 		final @Coerce Object allShips,
 		final @Coerce Object chunkAllocators,
@@ -61,8 +61,7 @@ public class MixinShipObjectServerWorld implements ShipObjectServerWorldAccessor
 		at = @At(
 			value = "INVOKE",
 			target = "Lorg/valkyrienskies/core/impl/game/ships/ShipObjectServerWorld;deleteShip(Lorg/valkyrienskies/core/api/ships/ServerShip;)V"
-		),
-		remap = false
+		)
 	)
 	public void postTick$deleteShip(final ShipObjectServerWorld self, final ServerShip ship, final Operation<Void> operation) {
 		// Hope VS won't have two deleteShip invoke sites in the future
@@ -88,8 +87,7 @@ public class MixinShipObjectServerWorld implements ShipObjectServerWorldAccessor
 				opcode = Opcodes.GETFIELD,
 				ordinal = 1
 			)
-		),
-		remap = false
+		)
 	)
 	public Iterator<ServerShip> postTick$createLoadedShips(
 		final Iterable<ServerShip> ships,
