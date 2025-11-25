@@ -24,7 +24,9 @@ dependencies {
 	implementation "com.google.auto.service:auto-service:1.1.1"
 	annotationProcessor "com.google.auto.service:auto-service:1.1.1"
 
-	modApi files("${project.rootDir}/build/remapped/valkyrienskies-common-dev.jar")
+	if (!project.gradle.startParameter.taskNames.contains("mapVS")) {
+		modApi files("${project.rootDir}/build/remapped/valkyrienskies-common-dev.jar")
+	}
 
 	compileOnly "cc.tweaked:cc-tweaked-${minecraft_version}-common:${cct_version}"
 

@@ -102,7 +102,9 @@ jobs:
           output PR_NUMBER "${{ github.event.number }}"
           output HEAD_SHA "${{ github.sha }}"
       - name: Gradle Build
-        run: ./gradlew build --no-daemon "-Dmod_artifact_suffix=-pr${{ github.event.number }}-$(git rev-parse --short ${{ github.sha }})"
+        run: |
+          ./gradlew mapVS
+          ./gradlew build --no-daemon "-Dmod_artifact_suffix=-pr${{ github.event.number }}-$(git rev-parse --short ${{ github.sha }})"
       - name: Upload Build Artifacts
         id: artifact
         uses: actions/upload-artifact@v4
