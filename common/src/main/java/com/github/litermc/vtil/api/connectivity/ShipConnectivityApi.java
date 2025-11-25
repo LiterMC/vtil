@@ -1,13 +1,8 @@
 package com.github.litermc.vtil.api.connectivity;
 
-import com.github.litermc.vtil.accessor.ShipObjectServerWorldAccessor;
-import com.github.litermc.vtil.platform.PlatformHelper;
-
-import org.valkyrienskies.core.api.ships.QueryableShipData;
-import org.valkyrienskies.core.api.ships.ServerShip;
-import org.valkyrienskies.core.internal.constraints.VSConstraint;
-import org.valkyrienskies.core.internal.world.VsiServerShipWorld;
-import org.valkyrienskies.mod.common.VSGameUtilsKt;
+import org.valkyrienskies.core.api.ships.PhysShip;
+import org.valkyrienskies.core.internal.joints.VSJoint;
+import org.valkyrienskies.core.internal.world.VsiPhysLevel;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -20,36 +15,47 @@ import java.util.Set;
 public final class ShipConnectivityApi {
 	private ShipConnectivityApi() {}
 
-	public static Set<ServerShip> getAllConnectedShipsAndSelf(final long shipId) {
-		final VsiServerShipWorld world = VSGameUtilsKt.getShipObjectWorld(PlatformHelper.get().getCurrentServer());
-		final QueryableShipData<ServerShip> shipQuery = world.getAllShips();
-		final ServerShip startShip = shipQuery.getById(shipId);
-		final Collection<VSConstraint> constraints = ((ShipObjectServerWorldAccessor) (world)).vtil$getConstraints(shipId);
-		if (constraints.isEmpty()) {
+	public static Set<PhysShip> getAllConnectedShipsAndSelf(final VsiPhysLevel world, final long shipId) {
+		final PhysShip startShip = world.getShipById(shipId);
+		final Collection<Integer> joints = world.getJointsFromShip(shipId);
+		if (joints.isEmpty()) {
 			return Set.of(startShip);
 		}
-		final Set<ServerShip> ships = new HashSet<>(constraints.size() + 1);
+		final Set<PhysShip> ships = new HashSet<>(joints.size() + 1);
 		ships.add(startShip);
-		for (final VSConstraint constraint : constraints) {
-			addConnectedShips(world, shipQuery, shipQuery.getById(constraint.getShipId0()), ships);
-			addConnectedShips(world, shipQuery, shipQuery.getById(constraint.getShipId1()), ships);
+		for (final Integer jointId : joints) {
+			final VSJoint joint = world.getJointById(jointId);
+			final Long id0 = joint.getShipId0();
+			if (id0 != null) {
+				addConnectedShips(world, world.getShipById(id0), ships);
+			}
+			final Long id1 = joint.getShipId1();
+			if (id1 != null) {
+				addConnectedShips(world, world.getShipById(id1), ships);
+			}
 		}
 		return ships;
 	}
 
 	private static void addConnectedShips(
-		final VsiServerShipWorld world,
-		final QueryableShipData<ServerShip> shipQuery,
-		final ServerShip ship,
-		final Set<ServerShip> result
+		final VsiPhysLevel world,
+		final PhysShip ship,
+		final Set<PhysShip> result
 	) {
-		if (!result.add(ship)) {
+		if (ship == null || !result.add(ship)) {
 			return;
 		}
-		final Collection<VSConstraint> constraints = ((ShipObjectServerWorldAccessor) (world)).vtil$getConstraints(ship.getId());
-		for (final VSConstraint constraint : constraints) {
-			addConnectedShips(world, shipQuery, shipQuery.getById(constraint.getShipId0()), result);
-			addConnectedShips(world, shipQuery, shipQuery.getById(constraint.getShipId1()), result);
+		final Collection<Integer> joints = world.getJointsFromShip(ship.getId());
+		for (final Integer jointId : joints) {
+			final VSJoint joint = world.getJointById(jointId);
+			final Long id0 = joint.getShipId0();
+			if (id0 != null) {
+				addConnectedShips(world, world.getShipById(id0), result);
+			}
+			final Long id1 = joint.getShipId1();
+			if (id1 != null) {
+				addConnectedShips(world, world.getShipById(id1), result);
+			}
 		}
 	}
 }

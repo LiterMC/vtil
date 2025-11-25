@@ -1,4 +1,13 @@
 tiny	2	0	shadow	named
+c	org/valkyrienskies/core/impl/shadow/CA	org/valkyrienskies/core/api_impl/attachment/AttachmentHolderImpl
+	f	Ljava/util/Map;	e	attachments
+
+c	org/valkyrienskies/core/impl/shadow/CA$a	org/valkyrienskies/core/api_impl/attachment/AttachmentHolderImpl$Holder
+	f	Ljava/lang/Object;	a	attachment
+	f	Lorg/valkyrienskies/core/impl/shadow/CD;	b	info
+
+c	org/valkyrienskies/core/impl/shadow/CD	org/valkyrienskies/core/api_impl/attachment/AttachmentInfo
+
 c	org/valkyrienskies/core/impl/shadow/CR	org/valkyrienskies/core/impl/todo/ChunkTrackingInfo
 	f	Ljava/util/Map;	a	playersToShipsWatchingMap
 	f	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;	f	shipsToPlayersWatchingMap

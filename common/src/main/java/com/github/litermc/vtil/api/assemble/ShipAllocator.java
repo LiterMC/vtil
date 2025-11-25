@@ -1,10 +1,12 @@
 package com.github.litermc.vtil.api.assemble;
 
 import com.github.litermc.vtil.Constants;
+import com.github.litermc.vtil.accessor.AttachmentHolderAccessor;
 import com.github.litermc.vtil.accessor.ShipObjectServerWorldAccessor;
 import com.github.litermc.vtil.config.Config;
 import com.github.litermc.vtil.platform.PlatformHelper;
 import com.github.litermc.vtil.util.LevelUtil;
+import com.github.litermc.vtil.util.TaskUtil;
 
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -28,6 +30,7 @@ import org.joml.Vector3dc;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 import org.joml.primitives.AABBic;
+import org.valkyrienskies.core.api.attachment.AttachmentHolder;
 import org.valkyrienskies.core.api.ships.LoadedServerShip;
 import org.valkyrienskies.core.api.ships.QueryableShipData;
 import org.valkyrienskies.core.api.ships.ServerShip;
@@ -38,6 +41,7 @@ import org.valkyrienskies.core.impl.game.ships.ShipObjectServer;
 import org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld;
 import org.valkyrienskies.core.impl.networking.impl.PacketShipRemove;
 import org.valkyrienskies.core.internal.ShipTeleportData;
+import org.valkyrienskies.core.internal.world.VsiPhysLevel;
 import org.valkyrienskies.core.internal.world.VsiPlayer;
 import org.valkyrienskies.core.internal.world.VsiServerShipWorld;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
@@ -163,7 +167,7 @@ public final class ShipAllocator extends SavedData {
 		final Vector3i center = ship.getChunkClaim().getCenterBlockCoordinates(VSGameUtilsKt.getYRange(level), new Vector3i());
 		level.setBlock(new BlockPos(center.x, center.y, center.z), Blocks.BARRIER.defaultBlockState(), Block.UPDATE_NONE);
 
-		final ShipTeleportData teleportData = new ShipTeleportDataImpl(SECURE_SHIP_STORAGE, ZERO_QUATD, ZERO_VEC3D, ZERO_VEC3D, null, SECURE_SHIP_SCALE);
+		final ShipTeleportData teleportData = new ShipTeleportDataImpl(SECURE_SHIP_STORAGE, ZERO_QUATD, ZERO_VEC3D, ZERO_VEC3D, null, SECURE_SHIP_SCALE, ship.getTransform().getPositionInShip());
 		this.shipWorld.teleportShip(ship, teleportData);
 
 		Constants.LOG.debug("ShipAllocator: Caching ship {} in {}", shipId, ship.getChunkClaimDimension());
@@ -226,20 +230,20 @@ public final class ShipAllocator extends SavedData {
 	private static void clearShip(final VsiServerShipWorld world, final ServerLevel level, final ServerShip ship) {
 		final BlockState AIR = Blocks.AIR.defaultBlockState();
 		ship.setTransformProvider(null);
-		MutableClassToInstanceMap<Object> attachments = null;
+		AttachmentHolder attachmentHolder = null;
 		if (ship instanceof final ShipData shipData) {
-			attachments = shipData.getPersistentAttachedData();
+			attachmentHolder = shipData.getAttachmentHolder();
 		} else if (ship instanceof final ShipObjectServer shipObject) {
-			attachments = shipObject.getShipData().getPersistentAttachedData();
+			attachmentHolder = shipObject.getShipData().getAttachmentHolder();
 		}
-		if (attachments != null) {
-			for (final Class<?> clazz : List.copyOf(attachments.keySet())) {
-				ship.saveAttachment(clazz, null);
-			}
+		if (attachmentHolder instanceof final AttachmentHolderAccessor attachmentAccessor) {
+			// TODO
+			attachmentAccessor.vtil$clear();
 		}
-		for (final Integer cid : Set.copyOf(((ShipObjectServerWorldAccessor) (world)).vtil$getConstraintIds(ship.getId()))) {
-			world.removeConstraint(cid);
-		}
+		TaskUtil.queuePhysicsTick((physWorld0) -> {
+			final VsiPhysLevel physWorld = ((VsiPhysLevel) (physWorld0));
+			physWorld.getJointsFromShip(ship.getId()).forEach((id) -> physWorld.removeJoint(id));
+		});
 		// TODO: remove disabledCollisionPairs but it is obfuscated
 		final AABBic box = ship.getShipAABB();
 		if (box == null) {

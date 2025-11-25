@@ -22,7 +22,6 @@ import net.minecraft.server.level.ServerLevel;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.mod.common.command.ShipArgument;
-import org.valkyrienskies.mod.mixinducks.feature.command.VSCommandSource;
 
 import java.util.Set;
 
@@ -55,7 +54,7 @@ public final class VtilCommands {
 				)
 			)
 			.then(Commands.literal("delete")
-				.then(Commands.argument("ships", ShipArgument.Companion.ships())
+				.then(Commands.argument("ships", ShipArgument.ships())
 					.executes(VtilCommands::delete)
 				)
 			)
@@ -109,7 +108,7 @@ public final class VtilCommands {
 		final CommandSourceStack source = context.getSource();
 		final MinecraftServer server = source.getServer();
 		final ShipAllocator allocator = ShipAllocator.get(server);
-		final Set<Ship> ships = ShipArgument.Companion.getShips((CommandContext<VSCommandSource>) ((CommandContext<?>) (context)), "ships");
+		final Set<Ship> ships = ShipArgument.getShips(context, "ships");
 		int successCount = 0;
 		for (final Ship ship : ships) {
 			if (!(ship instanceof ServerShip serverShip)) {

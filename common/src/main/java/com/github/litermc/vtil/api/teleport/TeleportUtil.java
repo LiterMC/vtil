@@ -38,7 +38,7 @@ public class TeleportUtil {
 		final Vector3dc velocity = data.velocity();
 		final Vector3dc omega = data.omega();
 
-		final ShipTeleportData teleportData = new ShipTeleportDataImpl(newPos, rotation, velocity, omega, dimension, null);
+		final ShipTeleportData teleportData = new ShipTeleportDataImpl(newPos, rotation, velocity, omega, dimension, null, ship.getTransform().getPositionInShip());
 		world.teleportShip(ship, teleportData);
 		if (velocity.lengthSquared() != 0 || omega.lengthSquared() != 0) {
 			final ServerShipTransformProvider oldProvider = ship.getTransformProvider();

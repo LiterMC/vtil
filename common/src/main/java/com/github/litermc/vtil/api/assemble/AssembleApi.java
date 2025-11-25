@@ -31,9 +31,11 @@ import org.joml.Vector3dc;
 import org.joml.Vector3i;
 import org.joml.primitives.AABBd;
 import org.joml.primitives.AABBic;
+import org.valkyrienskies.core.api.bodies.properties.BodyTransform;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.ServerShipTransformProvider;
 import org.valkyrienskies.core.api.ships.properties.ShipTransform;
+import org.valkyrienskies.core.impl.bodies.properties.BodyTransformImpl;
 import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl;
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl;
 import org.valkyrienskies.core.internal.world.VsiServerShipWorld;
@@ -91,9 +93,9 @@ public final class AssembleApi {
 
 		final Vector3d worldCenterD = blocksBox.center(new Vector3d());
 		final Vector3i worldCenter = new Vector3i(Mth.floor(worldCenterD.x()), Mth.floor(worldCenterD.y()), Mth.floor(worldCenterD.z()));
-		final ServerShip ship = allocator.allocShip()
-			.consume(new ShipTeleportDataImpl(worldCenterD, ZERO_QUATD, ZERO_VEC3D, ZERO_VEC3D, levelId, 1.0));
-		final Vector3i shipCenter = ship.getChunkClaim().getCenterBlockCoordinates(VSGameUtilsKt.getYRange(level), new Vector3i());
+		final ShipAllocator.ServerShipHolder shipHolder = allocator.allocShip();
+		final Vector3i shipCenter = shipHolder.getShipData().getChunkClaim().getCenterBlockCoordinates(VSGameUtilsKt.getYRange(level), new Vector3i());
+		final ServerShip ship = shipHolder.consume(new ShipTeleportDataImpl(new Vector3d(worldCenter), ZERO_QUATD, ZERO_VEC3D, ZERO_VEC3D, levelId, 1.0, new Vector3d(shipCenter)));
 		final Vector3i offset = shipCenter.sub(worldCenter, new Vector3i());
 		final Map<BlockPos, BlockState> blockStates = new HashMap<>(blocks.size());
 		final List<Entity> attachableEntities = new ArrayList<>();
@@ -134,7 +136,7 @@ public final class AssembleApi {
 		}
 
 		sendBlockUpdates(level, offset, blockStates);
-		fixShipStatus(shipWorld, ship, new Vector3d(shipCenter), new Vector3d(worldCenter), rootShip);
+		// fixShipStatus(shipWorld, ship, new Vector3d(shipCenter), new Vector3d(worldCenter), rootShip);
 		return ship;
 	}
 
@@ -217,7 +219,7 @@ public final class AssembleApi {
 					TaskUtil.queueTickEnd(this);
 					return;
 				}
-				final ServerShip ship = shipHolder.consume(new ShipTeleportDataImpl(worldCenterD, ZERO_QUATD, ZERO_VEC3D, ZERO_VEC3D, levelId, 1.0));
+				final ServerShip ship = shipHolder.consume(new ShipTeleportDataImpl(new Vector3d(worldCenter), ZERO_QUATD, ZERO_VEC3D, ZERO_VEC3D, levelId, 1.0, new Vector3d(shipCenter)));
 
 				final Map<BlockPos, BlockState> blockStates = new HashMap<>(blocks.size());
 				final List<Entity> attachableEntities = new ArrayList<>();
@@ -395,7 +397,7 @@ public final class AssembleApi {
 					omega.set(rootShip.getOmega());
 					scaling.set(selfTransform2.getShipToWorldScaling());
 				}
-				final ShipTransform newTransform = new ShipTransformImpl(position, shipAnchor, rotation, scaling);
+				final BodyTransform newTransform = new BodyTransformImpl(position, rotation, scaling, shipAnchor);
 				return new NextTransformAndVelocityData(newTransform, velocity, omega);
 			}
 		});

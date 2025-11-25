@@ -1,7 +1,10 @@
 package com.github.litermc.vtil.util;
 
+import org.valkyrienskies.core.api.world.PhysLevel;
+
 import java.util.Queue;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.function.Consumer;
 
 public final class TaskUtil {
 	private static final Queue<Task> TICK_START_QUEUE = new PriorityBlockingQueue<>();
@@ -49,6 +52,10 @@ public final class TaskUtil {
 
 	public static void queueTickEnd(final int delay, final Runnable task) {
 		TICK_END_QUEUE.add(new Task(tick + delay, task));
+	}
+
+	public static void queuePhysicsTick(final Consumer<PhysLevel> task) {
+		// TODO
 	}
 
 	record Task(long tick, Runnable task) implements Comparable<Task> {

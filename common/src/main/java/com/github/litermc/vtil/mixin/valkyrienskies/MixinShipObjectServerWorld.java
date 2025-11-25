@@ -14,6 +14,7 @@ import org.valkyrienskies.core.internal.joints.VSJoint;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -32,14 +33,6 @@ import java.util.Set;
 
 @Mixin(ShipObjectServerWorld.class)
 public class MixinShipObjectServerWorld implements ShipObjectServerWorldAccessor {
-	@Shadow
-	@Final
-	private Map<Integer, VSConstraint> constraints;
-
-	@Shadow
-	@Final
-	private Map<Long, Set<Integer>> shipIdToConstraints;
-
 	@Unique
 	private VSNetworking networking;
 
@@ -51,27 +44,11 @@ public class MixinShipObjectServerWorld implements ShipObjectServerWorldAccessor
 		final VSNetworking networking,
 		final @Coerce Object blockTypes,
 		final @Coerce Object dimensionInfo,
-		final CallbackInfo ci
+		final @Coerce Object connectivityManager,
+		final @Coerce Object shipDataProvider,
+		final @Coerce Object vsCoreProvider
 	) {
 		this.networking = networking;
-	}
-
-	@Override
-	public Collection<Integer> vtil$getConstraintIds(final long shipId) {
-		final Set<Integer> conIds = this.shipIdToConstraints.get(shipId);
-		if (conIds == null) {
-			return Collections.emptySet();
-		}
-		return conIds;
-	}
-
-	@Override
-	public Collection<VSConstraint> vtil$getConstraints(final long shipId) {
-		final Set<Integer> conIds = this.shipIdToConstraints.get(shipId);
-		if (conIds == null) {
-			return Collections.emptyList();
-		}
-		return conIds.stream().map(this.constraints::get).toList();
 	}
 
 	@Override
@@ -106,9 +83,10 @@ public class MixinShipObjectServerWorld implements ShipObjectServerWorldAccessor
 		),
 		slice = @Slice(
 			from = @At(
-				value = "INVOKE",
-				target = "Lorg/valkyrienskies/core/impl/game/ships/ShipObjectServerWorld;getAllShips()Lorg/valkyrienskies/core/api/ships/QueryableShipData;",
-				ordinal = 0
+				value = "FIELD",
+				target = "Lorg/valkyrienskies/core/impl/game/ships/ShipObjectServerWorld;allShips:Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;",
+				opcode = Opcodes.GETFIELD,
+				ordinal = 1
 			)
 		),
 		remap = false

@@ -271,17 +271,38 @@ vsModules.each { module ->
 			file("${project.rootDir}/build/remapped/valkyrienskies-${module}-dev.jar"),
 			vsMappingsFile,
 			'shadow',
-			'named'
+			'named',
+		]
+	}
+}
+
+def vsEnvs = ['common', 'fabric', 'forge']
+vsEnvs.each { env ->
+	def vsCfg = configurations.detachedConfiguration(
+		dependencies.create("org.valkyrienskies:valkyrienskies-120-${env}:${vs2_version}") { transitive = false }
+	)
+
+	tasks.register("mapVSshadow2named_${env}", JavaExec) {
+		classpath = configurations.remapTool
+		mainClass = "net.fabricmc.tinyremapper.Main"
+		standardOutput = new FileOutputStream("${buildDir}/tiny-remapper.log")
+		args = [
+			vsCfg.first(),
+			file("${project.rootDir}/build/remapped/valkyrienskies-${env}-dev.jar"),
+			vsMappingsFile,
+			'shadow',
+			'named',
 		]
 	}
 }
 
 tasks.register("mapVS") {
 	dependsOn vsModules.collect { "mapVSshadow2named_${it}" }
+	dependsOn vsEnvs.collect { "mapVSshadow2named_${it}" }
 }
 
 tasks.named("compileJava") {
-	dependsOn "mapVS"
+	// dependsOn "mapVS"
 }
 
 // Declare capabilities on the outgoing configurations.
