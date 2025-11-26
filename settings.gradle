@@ -26,6 +26,10 @@ pluginManagement {
 		maven {
 			name = 'Architectury'
 			url = 'https://maven.architectury.dev'
+			// content {
+			// 	includeGroup('architectury-plugin')
+			// 	includeGroupAndSubgroups('dev.architectury')
+			// }
 		}
 	}
 }

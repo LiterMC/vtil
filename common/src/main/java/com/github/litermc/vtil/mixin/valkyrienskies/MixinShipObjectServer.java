@@ -24,7 +24,7 @@ public class MixinShipObjectServer implements ShipObjectServerAccessor {
 		return this.serverTickListeners.values();
 	}
 
-	@Inject(method = "applyAttachmentInterfaces", at = @At("HEAD"))
+	@Inject(method = "applyAttachmentInterfaces", at = @At("HEAD"), remap = false)
 	private void applyAttachmentInterfaces(final Class<?> clazz, final Object value, final CallbackInfo ci) {
 		if (value == null) {
 			this.serverTickListeners.remove(clazz);

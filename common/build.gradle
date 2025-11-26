@@ -19,14 +19,13 @@ dependencies {
 
 	compileOnly "org.spongepowered:mixin:0.8.5"
 	compileOnly annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0")
-	implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 
-	implementation "com.google.auto.service:auto-service:1.1.1"
-	annotationProcessor "com.google.auto.service:auto-service:1.1.1"
+	implementation annotationProcessor("com.google.auto.service:auto-service:1.1.1")
 
-	if (!project.gradle.startParameter.taskNames.contains("mapVS")) {
-		modApi files("${project.rootDir}/build/remapped/valkyrienskies-common-dev.jar")
-	}
+	// if (!project.gradle.startParameter.taskNames.contains("mapVS")) {
+	// 	modApi files("${project.rootDir}/build/remapped/valkyrienskies-common-dev.jar")
+	// }
+	modCompileOnly "org.valkyrienskies:valkyrienskies-120-common:${vs2_version}"
 
 	compileOnly "cc.tweaked:cc-tweaked-${minecraft_version}-common:${cct_version}"
 

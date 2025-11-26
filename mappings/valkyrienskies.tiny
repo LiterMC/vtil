@@ -1,4 +1,4 @@
-tiny	2	0	shadow	named
+tiny	2	0	intermediary	named
 c	org/valkyrienskies/core/impl/shadow/CA	org/valkyrienskies/core/api_impl/attachment/AttachmentHolderImpl
 	f	Ljava/util/Map;	e	attachments
 
