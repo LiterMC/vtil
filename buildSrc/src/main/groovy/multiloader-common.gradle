@@ -326,7 +326,7 @@ dependencies {
 
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = java_version
+	it.options.release = Integer.parseInt(java_version)
 }
 
 sourcesJar {
