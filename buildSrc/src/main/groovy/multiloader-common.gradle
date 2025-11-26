@@ -240,7 +240,7 @@ dependencies {
 	mappings loom.layered {
 		officialMojangMappings()
 		// parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
-		// mappings(file("${project.rootDir}/mappings/valkyrienskies.tiny"))
+		mappings(file("${project.rootDir}/mappings/valkyrienskies.tiny"))
 	}
 
 	// remapTool "net.fabricmc:tiny-remapper:0.12.0"
@@ -322,6 +322,11 @@ dependencies {
 	publishing.publications.configureEach {
 		suppressPomMetadataWarningsFor(variant)
 	}
+}
+
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = java_version
 }
 
 sourcesJar {
