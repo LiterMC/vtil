@@ -1,16 +1,19 @@
 package com.github.litermc.vtil.mixin.valkyrienskies;
 
 import com.github.litermc.vtil.accessor.ShipObjectServerWorldAccessor;
-import com.github.litermc.vtil.accessor.VSNetworkingAccessor;
 import com.github.litermc.vtil.api.assemble.ShipAllocator;
 import com.github.litermc.vtil.config.Config;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.valkyrienskies.core.api.ships.QueryableShipData;
 import org.valkyrienskies.core.api.ships.ServerShip;
-import org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld;
-import org.valkyrienskies.core.impl.networking.VSNetworking;
+import org.valkyrienskies.core.impl.api.ServerShipInternal;
+import org.valkyrienskies.core.impl.game.ships.ShipData;
 import org.valkyrienskies.core.impl.networking.simple.SimplePacketNetworking;
 import org.valkyrienskies.core.internal.joints.VSJoint;
+import org.valkyrienskies.core.internal.ships.VsiMutableQueryableShipData;
+import org.valkyrienskies.core.internal.world.VsiPlayer;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -31,39 +34,57 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-@Mixin(ShipObjectServerWorld.class)
-public class MixinShipObjectServerWorld implements ShipObjectServerWorldAccessor {
+@Mixin(org.valkyrienskies.core.impl.shadow.Er.class)
+public abstract class MixinShipObjectServerWorld implements ShipObjectServerWorldAccessor {
 	@Unique
-	private VSNetworking networking;
+	private org.valkyrienskies.core.impl.shadow.Fg networking;
 
-	@Inject(method = "<init>", at = @At("RETURN"))
+	@Inject(method = "<init>", at = @At("RETURN"), remap = false)
 	public void init(
 		final @Coerce Object allShips,
 		final @Coerce Object chunkAllocators,
 		final @Coerce Object loadManager,
-		final VSNetworking networking,
+		final org.valkyrienskies.core.impl.shadow.Fg networking,
 		final @Coerce Object blockTypes,
 		final @Coerce Object dimensionInfo,
 		final @Coerce Object connectivityManager,
 		final @Coerce Object shipDataProvider,
-		final @Coerce Object vsCoreProvider
+		final @Coerce Object vsCoreProvider,
+		final CallbackInfo ci
 	) {
 		this.networking = networking;
 	}
 
+	@Shadow(remap = false)
+	protected abstract VsiMutableQueryableShipData<ShipData> a();
+
+	@Override
+	public VsiMutableQueryableShipData<ShipData> vtil$getAllShips() {
+		return this.a();
+	}
+
 	@Override
 	public SimplePacketNetworking vtil$getSimplePackets() {
-		return ((VSNetworkingAccessor) ((Object) (this.networking))).vtil$getSimplePackets();
+		return this.networking.c;
+	}
+
+	@Shadow(remap = false)
+	protected abstract ImmutableMap<VsiPlayer, ImmutableSet<ServerShipInternal>> c();
+
+	@Override
+	public ImmutableMap<VsiPlayer, ImmutableSet<ServerShipInternal>> vtil$getPlayersToTrackedShips() {
+		return this.c();
 	}
 
 	@WrapOperation(
-		method = "postTick",
+		method = M_postTick + "()V",
 		at = @At(
 			value = "INVOKE",
-			target = "Lorg/valkyrienskies/core/impl/game/ships/ShipObjectServerWorld;deleteShip(Lorg/valkyrienskies/core/api/ships/ServerShip;)V"
-		)
+			target = JDESC + "deleteShip(Lorg/valkyrienskies/core/api/ships/ServerShip;)V"
+		),
+		remap = false
 	)
-	public void postTick$deleteShip(final ShipObjectServerWorld self, final ServerShip ship, final Operation<Void> operation) {
+	public void postTick$deleteShip(final org.valkyrienskies.core.impl.shadow.Er self, final ServerShip ship, final Operation<Void> operation) {
 		// Hope VS won't have two deleteShip invoke sites in the future
 		if (!Config.recycleEmptyShips) {
 			operation.call(self, ship);
@@ -74,7 +95,7 @@ public class MixinShipObjectServerWorld implements ShipObjectServerWorldAccessor
 	}
 
 	@WrapOperation(
-		method = "postTick",
+		method = M_postTick + "()V",
 		at = @At(
 			value = "INVOKE",
 			target = "Ljava/lang/Iterable;iterator()Ljava/util/Iterator;",
@@ -83,11 +104,12 @@ public class MixinShipObjectServerWorld implements ShipObjectServerWorldAccessor
 		slice = @Slice(
 			from = @At(
 				value = "FIELD",
-				target = "Lorg/valkyrienskies/core/impl/game/ships/ShipObjectServerWorld;allShips:Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;",
+				target = JDESC + "allShips:Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;",
 				opcode = Opcodes.GETFIELD,
 				ordinal = 1
 			)
-		)
+		),
+		remap = false
 	)
 	public Iterator<ServerShip> postTick$createLoadedShips(
 		final Iterable<ServerShip> ships,

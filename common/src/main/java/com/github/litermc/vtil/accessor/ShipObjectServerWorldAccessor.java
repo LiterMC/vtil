@@ -1,7 +1,18 @@
 package com.github.litermc.vtil.accessor;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import org.valkyrienskies.core.impl.api.ServerShipInternal;
+import org.valkyrienskies.core.impl.game.ships.ShipData;
+import org.valkyrienskies.core.internal.ships.VsiMutableQueryableShipData;
+import org.valkyrienskies.core.internal.world.VsiPlayer;
 import org.valkyrienskies.core.impl.networking.simple.SimplePacketNetworking;
 
 public interface ShipObjectServerWorldAccessor {
+	static final String JDESC = "Lorg/valkyrienskies/core/impl/shadow/Er;";
+	static final String M_postTick = "h";
+
+	VsiMutableQueryableShipData<ShipData> vtil$getAllShips();
 	SimplePacketNetworking vtil$getSimplePackets();
+	ImmutableMap<VsiPlayer, ImmutableSet<ServerShipInternal>> vtil$getPlayersToTrackedShips();
 }

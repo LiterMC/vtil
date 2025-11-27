@@ -32,30 +32,32 @@ tasks.named('build') {
 	finalizedBy('outputRemapJar')
 }
 
-def vsMappingsFile = file("${project.rootDir}/mappings/vs.tiny")
+// def vsMappingsFile = file("${project.rootDir}/mappings/vs.tiny")
 
-tasks.register('remapVSinJar', JavaExec) {
-	dependsOn 'remapJar'
+// tasks.register('remapVSinJar', JavaExec) {
+// 	dependsOn 'remapJar'
 
-	def jarFile = tasks.named('remapJar').get().archiveFile.get().asFile
-	ext.outputFile = jarFile
+// 	def jarFile = tasks.named('remapJar').get().archiveFile.get().asFile
+// 	ext.outputFile = jarFile
 
-	classpath = configurations.remapTool
-	mainClass = "net.fabricmc.tinyremapper.Main"
-	standardOutput = new FileOutputStream("${buildDir}/tiny-remapper.log")
-	args = [
-		jarFile,
-		ext.outputFile,
-		vsMappingsFile,
-		'named',
-		'shadow',
-	]
-}
+// 	classpath = configurations.remapTool
+// 	mainClass = "net.fabricmc.tinyremapper.Main"
+// 	standardOutput = new FileOutputStream("${buildDir}/tiny-remapper.log")
+// 	args = [
+// 		jarFile,
+// 		ext.outputFile,
+// 		vsMappingsFile,
+// 		'named',
+// 		'shadow',
+// 	]
+// }
 
 tasks.register('outputRemapJar') {
-	dependsOn 'remapVSinJar'
+	// dependsOn 'remapVSinJar'
+	dependsOn 'remapJar'
 	doLast {
-		def jarFile = tasks.named('remapVSinJar').get().ext.outputFile
+		// def jarFile = tasks.named('remapVSinJar').get().ext.outputFile
+		def jarFile = tasks.named('remapJar').get().archiveFile.get().asFile
 		def targetDir = file("${rootDir}/mod-output/")
 		copy {
 			from jarFile

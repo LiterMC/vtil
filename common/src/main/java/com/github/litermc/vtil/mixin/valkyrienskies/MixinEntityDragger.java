@@ -6,8 +6,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 
-import org.valkyrienskies.core.api.ships.QueryableShipData;
 import org.valkyrienskies.core.api.ships.Ship;
+import org.valkyrienskies.core.internal.ships.VsiQueryableShipData;
 import org.valkyrienskies.mod.common.util.EntityDragger;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -22,12 +22,12 @@ public class MixinEntityDragger {
 		method = "dragEntitiesWithShips",
 		at = @At(
 			value = "INVOKE",
-			target = "Lorg/valkyrienskies/core/api/ships/QueryableShipData;getById(J)Lorg/valkyrienskies/core/api/ships/Ship;"
+			target = "Lorg/valkyrienskies/core/internal/ships/VsiQueryableShipData;getById(J)Lorg/valkyrienskies/core/api/ships/Ship;"
 		),
 		remap = false
 	)
 	public Ship dragEntitiesWithShips$getById(
-		final QueryableShipData query,
+		final VsiQueryableShipData query,
 		final long id,
 		final Operation<Ship> operation,
 		final @Local Entity entity

@@ -2,6 +2,7 @@ package com.github.litermc.vtil.api.assemble;
 
 import com.github.litermc.vtil.Constants;
 import com.github.litermc.vtil.accessor.AttachmentHolderAccessor;
+import com.github.litermc.vtil.accessor.ShipObjectServerAccessor;
 import com.github.litermc.vtil.accessor.ShipObjectServerWorldAccessor;
 import com.github.litermc.vtil.config.Config;
 import com.github.litermc.vtil.platform.PlatformHelper;
@@ -37,8 +38,6 @@ import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl;
 import org.valkyrienskies.core.impl.game.ships.ShipData;
-import org.valkyrienskies.core.impl.game.ships.ShipObjectServer;
-import org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld;
 import org.valkyrienskies.core.impl.networking.impl.PacketShipRemove;
 import org.valkyrienskies.core.internal.ShipTeleportData;
 import org.valkyrienskies.core.internal.world.VsiPhysLevel;
@@ -67,12 +66,14 @@ public final class ShipAllocator extends SavedData {
 
 	private final MinecraftServer server;
 	private final VsiServerShipWorld shipWorld;
+	private final ShipObjectServerWorldAccessor shipWorldAccessor;
 	private final LongOpenHashSet avaliableShips = new LongOpenHashSet();
 	private final LongOpenHashSet pendingShips = new LongOpenHashSet();
 
 	private ShipAllocator(final MinecraftServer server) {
 		this.server = server;
 		this.shipWorld = VSGameUtilsKt.getShipObjectWorld(server);
+		this.shipWorldAccessor = (ShipObjectServerWorldAccessor) (this.shipWorld);
 	}
 
 	/**
@@ -98,10 +99,9 @@ public final class ShipAllocator extends SavedData {
 
 	public static ShipAllocator load(final MinecraftServer server, final CompoundTag data) {
 		final ShipAllocator allocator = new ShipAllocator(server);
-		final QueryableShipData<ServerShip> shipStorage = allocator.shipWorld.getAllShips();
+		final QueryableShipData<ShipData> shipStorage = allocator.shipWorldAccessor.vtil$getAllShips();
 		for (final long id : data.getLongArray(CACHED_SHIPS_TAG)) {
-			final ServerShip ship = shipStorage.getById(id);
-			if (ship != null) {
+			if (shipStorage.contains(id)) {
 				allocator.avaliableShips.add(id);
 			}
 		}
@@ -113,7 +113,7 @@ public final class ShipAllocator extends SavedData {
 		data.putLongArray(
 			CACHED_SHIPS_TAG,
 			LongStream.concat(this.avaliableShips.longStream(), this.pendingShips.longStream())
-				.filter(this.shipWorld.getAllShips()::contains)
+				.filter(this.shipWorldAccessor.vtil$getAllShips()::contains)
 				.toArray()
 		);
 		return data;
@@ -141,7 +141,7 @@ public final class ShipAllocator extends SavedData {
 		ship.setSlug(REUSABLE_SHIP_SLUG_PREFIX + shipId);
 		ship.setStatic(true);
 
-		clearShip(this.shipWorld, level, ship);
+		this.clearShip(level, ship.getId());
 
 		if (!Config.reuseShipChunks) {
 			this.shipWorld.deleteShip(ship);
@@ -151,13 +151,13 @@ public final class ShipAllocator extends SavedData {
 		final ServerShip shipData = this.shipWorld.getAllShips().getById(shipId);
 		if (shipData != null) {
 			final ArrayList<VsiPlayer> players = new ArrayList<>(8);
-			((ShipObjectServerWorld) (this.shipWorld)).getPlayersToTrackedShips().forEach((player, tracking) -> {
+			this.shipWorldAccessor.vtil$getPlayersToTrackedShips().forEach((player, tracking) -> {
 				if (tracking.contains(shipData)) {
 					players.add(player);
 				}
 			});
 			if (!players.isEmpty()) {
-				((ShipObjectServerWorldAccessor) (this.shipWorld)).vtil$getSimplePackets().sendToClients(
+				this.shipWorldAccessor.vtil$getSimplePackets().sendToClients(
 					new PacketShipRemove(List.of(shipId)),
 					players.toArray(new VsiPlayer[players.size()])
 				);
@@ -182,7 +182,7 @@ public final class ShipAllocator extends SavedData {
 		if (ship != null) {
 			return ship;
 		}
-		return this.shipWorld.getAllShips().getById(shipId);
+		return this.shipWorldAccessor.vtil$getAllShips().getById(shipId);
 	}
 
 	/**
@@ -227,30 +227,35 @@ public final class ShipAllocator extends SavedData {
 		return this.new ServerShipHolder(ship);
 	}
 
-	private static void clearShip(final VsiServerShipWorld world, final ServerLevel level, final ServerShip ship) {
+	private void clearShip(final ServerLevel level, final long shipId) {
 		final BlockState AIR = Blocks.AIR.defaultBlockState();
+		final ServerShip ship = this.getShip(shipId);
 		ship.setTransformProvider(null);
-		AttachmentHolder attachmentHolder = null;
-		if (ship instanceof final ShipData shipData) {
-			attachmentHolder = shipData.getAttachmentHolder();
-		} else if (ship instanceof final ShipObjectServer shipObject) {
-			attachmentHolder = shipObject.getShipData().getAttachmentHolder();
-		}
-		if (attachmentHolder instanceof final AttachmentHolderAccessor attachmentAccessor) {
-			// TODO
-			attachmentAccessor.vtil$clear();
-		}
 		TaskUtil.queuePhysicsTick((physWorld0) -> {
 			final VsiPhysLevel physWorld = ((VsiPhysLevel) (physWorld0));
 			physWorld.getJointsFromShip(ship.getId()).forEach((id) -> physWorld.removeJoint(id));
 		});
-		// TODO: remove disabledCollisionPairs but it is obfuscated
+		// TODO: remove disabledCollisionPairs
 		final AABBic box = ship.getShipAABB();
-		if (box == null) {
-			return;
+		if (box != null) {
+			for (final BlockPos pos : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
+				level.setBlock(pos, AIR, Block.UPDATE_KNOWN_SHAPE);
+			}
 		}
-		for (final BlockPos pos : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
-			level.setBlock(pos, AIR, Block.UPDATE_KNOWN_SHAPE);
+		// clear attachemnts at last because setBlock needs update drag attachment
+		if (ship instanceof final ShipData shipData) {
+			final AttachmentHolderAccessor attachmentHolder =
+				(AttachmentHolderAccessor) ((Object) (shipData.getAttachmentHolder()));
+			attachmentHolder.vtil$clear();
+		} else if (ship instanceof final ShipObjectServerAccessor shipObject) {
+			final AttachmentHolderAccessor attachmentHolder =
+				(AttachmentHolderAccessor) ((Object) (shipObject.vtil$getShipData().getAttachmentHolder()));
+			for (final Class<?> clazz : attachmentHolder.vtil$getAttachmentKeys()) {
+				shipObject.vtil$removeAttachment(clazz);
+			}
+			shipObject.vtil$initDefaultAttachments();
+		} else {
+			throw new RuntimeException("Unexpected ship type: " + ship.getClass());
 		}
 	}
 
@@ -314,7 +319,7 @@ public final class ShipAllocator extends SavedData {
 			final long shipId = this.ship.getId();
 			final ServerShip ship = ShipAllocator.this.getShip(shipId);
 
-			clearShip(ShipAllocator.this.shipWorld, LevelUtil.getLevel(ship.getChunkClaimDimension()), ship);
+			ShipAllocator.this.clearShip(LevelUtil.getLevel(ship.getChunkClaimDimension()), shipId);
 			ship.setStatic(false);
 			ship.setSlug(slug);
 

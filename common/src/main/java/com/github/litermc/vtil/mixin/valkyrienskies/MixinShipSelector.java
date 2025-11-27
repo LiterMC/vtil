@@ -16,7 +16,8 @@ public class MixinShipSelector {
 		at = @At(
 			value = "INVOKE",
 			target = "Lkotlin/collections/CollectionsKt;asSequence(Ljava/lang/Iterable;)Lkotlin/sequences/Sequence;"
-		)
+		),
+		remap = false
 	)
 	private Iterable<Ship> select$iterable(Iterable<Ship> ships) {
 		return new ShipAllocator.SafeShipIterable(ships);

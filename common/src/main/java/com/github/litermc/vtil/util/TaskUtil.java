@@ -1,6 +1,7 @@
 package com.github.litermc.vtil.util;
 
 import org.valkyrienskies.core.api.world.PhysLevel;
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 import java.util.Queue;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -55,7 +56,7 @@ public final class TaskUtil {
 	}
 
 	public static void queuePhysicsTick(final Consumer<PhysLevel> task) {
-		// TODO
+		ValkyrienSkiesMod.getApi().getPhysTickEvent().once((event) -> task.accept(event.getWorld()));
 	}
 
 	record Task(long tick, Runnable task) implements Comparable<Task> {

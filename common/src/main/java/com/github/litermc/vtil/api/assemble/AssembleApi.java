@@ -53,6 +53,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+// TODO[bug]: reused ship may shift a distance
 public final class AssembleApi {
 	private static final Quaterniondc ZERO_QUATD = new Quaterniond();
 	private static final Vector3dc ZERO_VEC3D = new Vector3d();
@@ -95,7 +96,7 @@ public final class AssembleApi {
 		final Vector3i worldCenter = new Vector3i(Mth.floor(worldCenterD.x()), Mth.floor(worldCenterD.y()), Mth.floor(worldCenterD.z()));
 		final ShipAllocator.ServerShipHolder shipHolder = allocator.allocShip();
 		final Vector3i shipCenter = shipHolder.getShipData().getChunkClaim().getCenterBlockCoordinates(VSGameUtilsKt.getYRange(level), new Vector3i());
-		final ServerShip ship = shipHolder.consume(new ShipTeleportDataImpl(new Vector3d(worldCenter), ZERO_QUATD, ZERO_VEC3D, ZERO_VEC3D, levelId, 1.0, new Vector3d(shipCenter)));
+		final ServerShip ship = shipHolder.consume(new ShipTeleportDataImpl(worldCenterD, ZERO_QUATD, ZERO_VEC3D, ZERO_VEC3D, levelId, 1.0, new Vector3d(shipCenter).add(0.5, 0.5, 0.5)));
 		final Vector3i offset = shipCenter.sub(worldCenter, new Vector3i());
 		final Map<BlockPos, BlockState> blockStates = new HashMap<>(blocks.size());
 		final List<Entity> attachableEntities = new ArrayList<>();
@@ -219,7 +220,7 @@ public final class AssembleApi {
 					TaskUtil.queueTickEnd(this);
 					return;
 				}
-				final ServerShip ship = shipHolder.consume(new ShipTeleportDataImpl(new Vector3d(worldCenter), ZERO_QUATD, ZERO_VEC3D, ZERO_VEC3D, levelId, 1.0, new Vector3d(shipCenter)));
+				final ServerShip ship = shipHolder.consume(new ShipTeleportDataImpl(worldCenterD, ZERO_QUATD, ZERO_VEC3D, ZERO_VEC3D, levelId, 1.0, new Vector3d(shipCenter)));
 
 				final Map<BlockPos, BlockState> blockStates = new HashMap<>(blocks.size());
 				final List<Entity> attachableEntities = new ArrayList<>();
@@ -260,7 +261,7 @@ public final class AssembleApi {
 				}
 
 				sendBlockUpdates(level, offset, blockStates);
-				fixShipStatus(shipWorld, ship, new Vector3d(shipCenter), new Vector3d(worldCenter), rootShip);
+				// fixShipStatus(shipWorld, ship, new Vector3d(shipCenter), new Vector3d(worldCenter), rootShip);
 				future.complete(ship);
 			}
 		};
@@ -350,56 +351,56 @@ public final class AssembleApi {
 		}
 	}
 
-	private static void fixShipStatus(
-		final VsiServerShipWorld shipWorld,
-		final ServerShip ship,
-		final Vector3dc shipAnchor,
-		final Vector3dc targetAnchor,
-		final ServerShip rootShip
-	) {
-		// fix new ship's velocity and omega
-		final String dimension = ship.getChunkClaimDimension();
-		final Vector3d position = new Vector3d().set(ship.getTransform().getPositionInShip()).sub(shipAnchor).add(targetAnchor);
-		final Quaterniond rotation = new Quaterniond();
-		final Vector3d velocity = new Vector3d();
-		final Vector3d omega = new Vector3d();
-		final Vector3d scaling = new Vector3d(1);
+	// private static void fixShipStatus(
+	// 	final VsiServerShipWorld shipWorld,
+	// 	final ServerShip ship,
+	// 	final Vector3dc shipAnchor,
+	// 	final Vector3dc targetAnchor,
+	// 	final ServerShip rootShip
+	// ) {
+	// 	// fix new ship's velocity and omega
+	// 	final String dimension = ship.getChunkClaimDimension();
+	// 	final Vector3d position = new Vector3d(targetAnchor);
+	// 	final Quaterniond rotation = new Quaterniond();
+	// 	final Vector3d velocity = new Vector3d();
+	// 	final Vector3d omega = new Vector3d();
+	// 	final Vector3d scaling = new Vector3d(1);
 
-		if (rootShip != null) {
-			final ShipTransform selfTransform = rootShip.getTransform();
-			selfTransform.getShipToWorld().transformPosition(position);
-			rotation.set(selfTransform.getShipToWorldRotation());
-			velocity.set(rootShip.getVelocity());
-			omega.set(rootShip.getOmega());
-			scaling.set(selfTransform.getShipToWorldScaling());
-		}
+	// 	if (rootShip != null) {
+	// 		final ShipTransform selfTransform = rootShip.getTransform();
+	// 		selfTransform.getShipToWorld().transformPosition(position);
+	// 		rotation.set(selfTransform.getShipToWorldRotation());
+	// 		velocity.set(rootShip.getVelocity());
+	// 		omega.set(rootShip.getOmega());
+	// 		scaling.set(selfTransform.getShipToWorldScaling());
+	// 	}
 
-		// TODO: for some reason the reposition can only be correct after 3 physics ticks. Investigate why and find a solution.
-		// shipWorld.teleportShip(ship, new ShipTeleportDataImpl(position, rotation, velocity, omega, dimension, scale));
+	// 	// TODO: for some reason the reposition can only be correct after 3 physics ticks. Investigate why and find a solution.
+	// 	// shipWorld.teleportShip(ship, new ShipTeleportDataImpl(position, rotation, velocity, omega, dimension, scale));
 
-		final ServerShipTransformProvider oldProvider = ship.getTransformProvider();
-		ship.setTransformProvider(new ServerShipTransformProvider() {
-			private int count = 0;
+	// 	final ServerShipTransformProvider oldProvider = ship.getTransformProvider();
+	// 	ship.setTransformProvider(new ServerShipTransformProvider() {
+	// 		private int count = 0;
 
-			@Override
-			public NextTransformAndVelocityData provideNextTransformAndVelocity(final ShipTransform transform, final ShipTransform nextTransform) {
-				this.count++;
-				if (this.count <= 3) {
-					return null;
-				}
-				ship.setTransformProvider(oldProvider);
-				position.set(nextTransform.getPositionInShip()).sub(shipAnchor).add(targetAnchor);
-				if (rootShip != null) {
-					final ShipTransform selfTransform2 = rootShip.getTransform();
-					selfTransform2.getShipToWorld().transformPosition(position);
-					rotation.set(selfTransform2.getShipToWorldRotation());
-					velocity.set(rootShip.getVelocity());
-					omega.set(rootShip.getOmega());
-					scaling.set(selfTransform2.getShipToWorldScaling());
-				}
-				final BodyTransform newTransform = new BodyTransformImpl(position, rotation, scaling, shipAnchor);
-				return new NextTransformAndVelocityData(newTransform, velocity, omega);
-			}
-		});
-	}
+	// 		@Override
+	// 		public NextTransformAndVelocityData provideNextTransformAndVelocity(final ShipTransform transform, final ShipTransform nextTransform) {
+	// 			this.count++;
+	// 			if (this.count <= 3) {
+	// 				return null;
+	// 			}
+	// 			ship.setTransformProvider(oldProvider);
+	// 			position.set(targetAnchor);
+	// 			if (rootShip != null) {
+	// 				final ShipTransform selfTransform2 = rootShip.getTransform();
+	// 				selfTransform2.getShipToWorld().transformPosition(position);
+	// 				rotation.set(selfTransform2.getShipToWorldRotation());
+	// 				velocity.set(rootShip.getVelocity());
+	// 				omega.set(rootShip.getOmega());
+	// 				scaling.set(selfTransform2.getShipToWorldScaling());
+	// 			}
+	// 			final BodyTransform newTransform = new BodyTransformImpl(new Vector3d(position), new Quaterniond(rotation), new Vector3d(scaling), shipAnchor);
+	// 			return new NextTransformAndVelocityData(newTransform, velocity, omega);
+	// 		}
+	// 	});
+	// }
 }

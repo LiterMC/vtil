@@ -1,12 +1,19 @@
-tiny	2	0	shadow	named
+tiny	2	0	intermediary	named
 c	org/valkyrienskies/core/impl/shadow/CA	org/valkyrienskies/core/api_impl/attachment/AttachmentHolderImpl
+	f	Lorg/valkyrienskies/core/impl/shadow/CH;	a	registry
+	f	Ljava/util/concurrent/locks/ReentrantLock;	b	lock
+	f	Lcom/fasterxml/jackson/databind/node/ObjectNode;	c	dataStorage
+	f	Ljava/util/Set;	d	removedAttachments
 	f	Ljava/util/Map;	e	attachments
+	f	Ljava/util/Map;	f	invaildAttachments
 
 c	org/valkyrienskies/core/impl/shadow/CA$a	org/valkyrienskies/core/api_impl/attachment/AttachmentHolderImpl$Holder
 	f	Ljava/lang/Object;	a	attachment
 	f	Lorg/valkyrienskies/core/impl/shadow/CD;	b	info
 
 c	org/valkyrienskies/core/impl/shadow/CD	org/valkyrienskies/core/api_impl/attachment/AttachmentInfo
+
+c	org/valkyrienskies/core/impl/shadow/CH	org/valkyrienskies/core/api_impl/attachment/AttachmentRegistry
 
 c	org/valkyrienskies/core/impl/shadow/CR	org/valkyrienskies/core/impl/todo/ChunkTrackingInfo
 	f	Ljava/util/Map;	a	playersToShipsWatchingMap
@@ -45,6 +52,7 @@ c	org/valkyrienskies/core/impl/shadow/Eq	org/valkyrienskies/core/impl/game/ships
 	f	Lorg/valkyrienskies/core/impl/shadow/Fn;	d	shipDataChannel
 	f	Ljava/util/Map;	e	physicsListeners
 	f	Ljava/util/Map;	f	serverTickListeners
+	m	(Ljava/lang/Class;Ljava/lang/Object;)V	a	applyAttachmentInterfaces
 	m	()Lorg/valkyrienskies/core/impl/game/ships/ShipData;	c	getShipData
 
 c	org/valkyrienskies/core/impl/shadow/Er	org/valkyrienskies/core/impl/game/ships/ShipObjectServerWorld

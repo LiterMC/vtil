@@ -237,17 +237,22 @@ repositories {
 dependencies {
 	minecraft "com.mojang:minecraft:${minecraft_version}"
 
-	mappings(loom.layered {
+	mappings loom.layered {
 		officialMojangMappings()
 		parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
-	})
+		// mappings(file("${project.rootDir}/mappings/vs.tiny"))
+	}
 
 	remapTool "net.fabricmc:tiny-remapper:0.12.0"
 
-	implementation files("${project.rootDir}/build/remapped/valkyrienskies-api-dev.jar")
-	implementation files("${project.rootDir}/build/remapped/valkyrienskies-impl-dev.jar")
-	implementation files("${project.rootDir}/build/remapped/valkyrienskies-internal-dev.jar")
-	implementation files("${project.rootDir}/build/remapped/valkyrienskies-util-dev.jar")
+	// implementation files("${project.rootDir}/build/remapped/valkyrienskies-api-dev.jar")
+	// implementation files("${project.rootDir}/build/remapped/valkyrienskies-impl-dev.jar")
+	// implementation files("${project.rootDir}/build/remapped/valkyrienskies-internal-dev.jar")
+	// implementation files("${project.rootDir}/build/remapped/valkyrienskies-util-dev.jar")
+	implementation "org.valkyrienskies.core:api:${vs_core_version}"
+	implementation "org.valkyrienskies.core:impl:${vs_core_version}"
+	implementation "org.valkyrienskies.core:internal:${vs_core_version}"
+	implementation "org.valkyrienskies.core:util:${vs_core_version}"
 
 	implementation("org.joml:joml:1.10.5") { transitive = false }
 	implementation("org.joml:joml-primitives:1.10.0") { transitive = false }

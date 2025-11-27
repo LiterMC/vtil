@@ -70,7 +70,6 @@ jobs:
 
       - name: Gradle Check
         run: |
-          ./gradlew :common:mapVS --no-daemon
           ./gradlew check --no-daemon
 
   build:
@@ -105,7 +104,6 @@ jobs:
           output HEAD_SHA "${{ github.sha }}"
       - name: Gradle Build
         run: |
-          ./gradlew :common:mapVS --no-daemon
           ./gradlew build --no-daemon "-Dmod_artifact_suffix=-pr${{ github.event.number }}-$(git rev-parse --short ${{ github.sha }})"
       - name: Upload Build Artifacts
         id: artifact
