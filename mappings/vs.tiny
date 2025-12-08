@@ -69,7 +69,7 @@ c	org/valkyrienskies/core/impl/shadow/Er	org/valkyrienskies/core/impl/game/ships
 	f	Ljava/util/Map;	g	dimensionToGroundBodyId
 	f	Ljava/util/ArrayList;	h	dimensionsAddedThisTick
 	f	Ljava/util/ArrayList;	i	dimensionsRemovedThisTick
-	f	Ljava/util/ArrayList;	i	voxelShapeUpdatesList
+	f	Ljava/util/ArrayList;	j	voxelShapeUpdatesList
 	f	Ljava/util/Set;	H	disabledCollisionPairs
 	f	Ljava/util/List;	k	newShipObjects
 	f	Ljava/util/List;	l	newPhysicsEntities

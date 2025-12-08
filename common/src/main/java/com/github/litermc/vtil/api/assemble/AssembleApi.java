@@ -53,7 +53,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-// TODO[bug]: reused ship may shift a distance
+// TODO[bug]: reused ship may shift a distance / has a random inital momentum
 public final class AssembleApi {
 	private static final Quaterniondc ZERO_QUATD = new Quaterniond();
 	private static final Vector3dc ZERO_VEC3D = new Vector3d();
@@ -220,7 +220,7 @@ public final class AssembleApi {
 					TaskUtil.queueTickEnd(this);
 					return;
 				}
-				final ServerShip ship = shipHolder.consume(new ShipTeleportDataImpl(worldCenterD, ZERO_QUATD, ZERO_VEC3D, ZERO_VEC3D, levelId, 1.0, new Vector3d(shipCenter)));
+				final ServerShip ship = shipHolder.consume(new ShipTeleportDataImpl(worldCenterD, ZERO_QUATD, ZERO_VEC3D, ZERO_VEC3D, levelId, 1.0, new Vector3d(shipCenter).add(0.5, 0.5, 0.5)));
 
 				final Map<BlockPos, BlockState> blockStates = new HashMap<>(blocks.size());
 				final List<Entity> attachableEntities = new ArrayList<>();
