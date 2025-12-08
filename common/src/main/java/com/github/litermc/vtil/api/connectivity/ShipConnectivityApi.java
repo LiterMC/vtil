@@ -20,6 +20,19 @@ import java.util.Set;
 public final class ShipConnectivityApi {
 	private ShipConnectivityApi() {}
 
+	public static boolean isConnectedToGround(final long shipId) {
+		final ServerShipWorldCore world = VSGameUtilsKt.getShipObjectWorld(PlatformHelper.get().getCurrentServer());
+		final ServerShip ship = world.getAllShips().getById(shipId);
+		final Collection<VSConstraint> constraints = ((ShipObjectServerWorldAccessor) (world)).vtil$getConstraints(shipId);
+		final long dimId = world.getDimensionToGroundBodyIdImmutable().get(ship.getChunkClaimDimension());
+		for (final VSConstraint constraint : constraints) {
+			if (constraint.getShipId0() == dimId || constraint.getShipId1() == dimId) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static Set<ServerShip> getAllConnectedShipsAndSelf(final long shipId) {
 		final ServerShipWorldCore world = VSGameUtilsKt.getShipObjectWorld(PlatformHelper.get().getCurrentServer());
 		final QueryableShipData<ServerShip> shipQuery = world.getAllShips();
