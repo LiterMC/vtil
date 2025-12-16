@@ -39,6 +39,9 @@ public final class ShipConnectivityApi {
 
 	public static Set<PhysShip> getAllConnectedShipsAndSelf(final VsiPhysLevel world, final long shipId) {
 		final PhysShip startShip = world.getShipById(shipId);
+		if (startShip == null) {
+			return Set.of();
+		}
 		final Collection<Integer> joints = world.getJointsFromShip(shipId);
 		if (joints.isEmpty()) {
 			return Set.of(startShip);
