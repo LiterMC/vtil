@@ -12,10 +12,10 @@ import org.joml.Vector3dc;
 import org.valkyrienskies.core.api.ships.LoadedServerShip;
 import org.valkyrienskies.core.api.ships.ServerShipTransformProvider;
 import org.valkyrienskies.core.api.ships.properties.ShipTransform;
-import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl;
 import org.valkyrienskies.core.internal.ShipTeleportData;
 import org.valkyrienskies.core.internal.world.VsiServerShipWorld;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class TeleportUtil {
 		final Vector3dc velocity = data.velocity();
 		final Vector3dc omega = data.omega();
 
-		final ShipTeleportData teleportData = new ShipTeleportDataImpl(newPos, rotation, velocity, omega, dimension, null, ship.getTransform().getPositionInShip());
+		final ShipTeleportData teleportData = ValkyrienSkiesMod.getVsCore().newShipTeleportData(newPos, rotation, velocity, omega, dimension, null, ship.getTransform().getPositionInShip());
 		world.teleportShip(ship, teleportData);
 		if (velocity.lengthSquared() != 0 || omega.lengthSquared() != 0) {
 			final ServerShipTransformProvider oldProvider = ship.getTransformProvider();
