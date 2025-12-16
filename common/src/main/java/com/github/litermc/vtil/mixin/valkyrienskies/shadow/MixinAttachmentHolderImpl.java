@@ -1,4 +1,4 @@
-package com.github.litermc.vtil.mixin.valkyrienskies;
+package com.github.litermc.vtil.mixin.valkyrienskies.shadow;
 
 import com.github.litermc.vtil.accessor.AttachmentHolderAccessor;
 
@@ -55,6 +55,11 @@ public abstract class MixinAttachmentHolderImpl implements AttachmentHolderAcces
 		return this.e;
 	}
 
+	@Unique
+	private Map<String, String> getInvaildAttachments() {
+		return this.f;
+	}
+
 	@Override
 	public Set<Class<?>> vtil$getAttachmentKeys() {
 		this.getLock().lock();
@@ -63,11 +68,6 @@ public abstract class MixinAttachmentHolderImpl implements AttachmentHolderAcces
 		} finally {
 			this.getLock().unlock();
 		}
-	}
-
-	@Unique
-	private Map<String, String> getInvaildAttachments() {
-		return this.f;
 	}
 
 	@Override

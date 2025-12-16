@@ -4,6 +4,7 @@ import com.github.litermc.vtil.Constants;
 import com.github.litermc.vtil.accessor.AttachmentHolderAccessor;
 import com.github.litermc.vtil.accessor.ShipObjectServerAccessor;
 import com.github.litermc.vtil.accessor.ShipObjectServerWorldAccessor;
+import com.github.litermc.vtil.api.attachment.IPermanentAttachment;
 import com.github.litermc.vtil.config.Config;
 import com.github.litermc.vtil.platform.PlatformHelper;
 import com.github.litermc.vtil.util.LevelUtil;
@@ -44,6 +45,7 @@ import org.valkyrienskies.core.internal.world.VsiPhysLevel;
 import org.valkyrienskies.core.internal.world.VsiPlayer;
 import org.valkyrienskies.core.internal.world.VsiServerShipWorld;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -157,7 +159,7 @@ public final class ShipAllocator extends SavedData {
 				}
 			});
 			if (!players.isEmpty()) {
-				this.shipWorldAccessor.vtil$getSimplePackets().sendToClients(
+				ValkyrienSkiesMod.getVsCore().getSimplePacketNetworking().sendToClients(
 					new PacketShipRemove(List.of(shipId)),
 					players.toArray(new VsiPlayer[players.size()])
 				);
@@ -251,9 +253,15 @@ public final class ShipAllocator extends SavedData {
 			final AttachmentHolderAccessor attachmentHolder =
 				(AttachmentHolderAccessor) ((Object) (shipObject.vtil$getShipData().getAttachmentHolder()));
 			for (final Class<?> clazz : attachmentHolder.vtil$getAttachmentKeys()) {
+				if (IPermanentAttachment.class.isAssignableFrom(clazz)) {
+					final IPermanentAttachment attachment = ((LoadedServerShip) (ship))
+						.getAttachment((Class<? extends IPermanentAttachment>) (clazz));
+					attachment.onShipClean();
+					continue;
+				}
 				shipObject.vtil$removeAttachment(clazz);
 			}
-			shipObject.vtil$initDefaultAttachments();
+			shipObject.vtil$reinitDefaultAttachments();
 		} else {
 			throw new RuntimeException("Unexpected ship type: " + ship.getClass());
 		}

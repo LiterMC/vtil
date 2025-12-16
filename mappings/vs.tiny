@@ -86,7 +86,7 @@ c	org/valkyrienskies/core/impl/shadow/Er	org/valkyrienskies/core/impl/game/ships
 	f	Lorg/valkyrienskies/core/impl/shadow/Fe;	I	udpServer
 	f	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;	w	shipToVoxelUpdates
 	f	Lorg/valkyrienskies/core/impl/shadow/DL;	x	aerodynamicUtils
-	m	(Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;Lorg/valkyrienskies/core/impl/game/ChunkAllocatorProvider;Lorg/valkyrienskies/core/impl/shadow/Ez;Lorg/valkyrienskies/core/impl/shadow/Fg;Lorg/valkyrienskies/core/impl/shadow/DN;Ljava/util/Map;Lorg/valkyrienskies/core/impl/shadow/DW;Lorg/valkyrienskies/core/impl/game/ships/ShipData$Factory;Ljavax/inject/Provider;)V	<init>	<init>
+	m	(Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;Lorg/valkyrienskies/core/impl/game/ChunkAllocatorProvider;Lorg/valkyrienskies/core/impl/shadow/Ez;Lorg/valkyrienskies/core/impl/shadow/Fi;Lorg/valkyrienskies/core/impl/shadow/DN;Ljava/util/Map;Lorg/valkyrienskies/core/impl/shadow/DW;Lorg/valkyrienskies/core/impl/game/ships/ShipData$Factory;Ljavax/inject/Provider;)V	<init>	<init>
 	m	()Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;	a	getAllShips
 	m	()Lorg/valkyrienskies/core/impl/game/ChunkAllocatorProvider;	b	getChunkAllocatorProvider
 	m	()Lorg/valkyrienskies/core/impl/program/VSCoreInternal;	k	getVSCore
@@ -102,7 +102,11 @@ c	org/valkyrienskies/core/impl/shadow/Er	org/valkyrienskies/core/impl/game/ships
 
 c	org/valkyrienskies/core/impl/shadow/Et	org/valkyrienskies/core/impl/game/ships/ShipObjectWorld
 
+c	org/valkyrienskies/core/impl/shadow/Eh	org/valkyrienskies/core/impl/game/ships/DragManager
+
 c	org/valkyrienskies/core/impl/shadow/EW	org/valkyrienskies/core/impl/networking/NetworkChannel
+
+c	org/valkyrienskies/core/impl/shadow/Ew	org/valkyrienskies/core/impl/game/ships/WingManager
 
 c	org/valkyrienskies/core/impl/shadow/EY	org/valkyrienskies/core/impl/networking/PacketType
 
@@ -110,7 +114,7 @@ c	org/valkyrienskies/core/impl/shadow/Ez	org/valkyrienskies/core/impl/todo/LoadM
 
 c	org/valkyrienskies/core/impl/shadow/Fe	org/valkyrienskies/core/impl/networking/UdpServerImpl
 
-c	org/valkyrienskies/core/impl/shadow/Fg	org/valkyrienskies/core/impl/networking/VSNetworking
+c	org/valkyrienskies/core/impl/shadow/Fi	org/valkyrienskies/core/impl/networking/VSNetworking
 	f	Lorg/valkyrienskies/core/impl/shadow/EW;	a	udp
 	f	Lorg/valkyrienskies/core/impl/shadow/EW;	b	tcp
 	f	Lorg/valkyrienskies/core/impl/networking/simple/SimplePacketNetworking;	c	simplePackets

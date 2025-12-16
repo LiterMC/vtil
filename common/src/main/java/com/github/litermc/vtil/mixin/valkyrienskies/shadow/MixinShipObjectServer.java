@@ -1,4 +1,4 @@
-package com.github.litermc.vtil.mixin.valkyrienskies;
+package com.github.litermc.vtil.mixin.valkyrienskies.shadow;
 
 import com.github.litermc.vtil.accessor.ShipObjectServerAccessor;
 import com.github.litermc.vtil.api.attachment.IServerTickListener;
@@ -23,11 +23,11 @@ public abstract class MixinShipObjectServer implements ShipObjectServerAccessor 
 	private final HashMap<Class<?>, IServerTickListener> serverTickListeners = new HashMap<>();
 
 	@Override
-	public void vtil$initDefaultAttachments() {
+	public void vtil$reinitDefaultAttachments() {
 		final var wingManager = new org.valkyrienskies.core.impl.shadow.Ew();
-		wingManager.createWingGroup();
+		wingManager.createWingGroup(/* isContraption */ false);
 		this.setAttachment(wingManager);
-		this.setAttachment(new org.valkyrienskies.core.impl.shadow.Eh());
+		// this.setAttachment(new org.valkyrienskies.core.impl.shadow.Eh()); // marked as permanent
 	}
 
 	@Override

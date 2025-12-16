@@ -1,4 +1,4 @@
-package com.github.litermc.vtil.mixin.valkyrienskies;
+package com.github.litermc.vtil.mixin.valkyrienskies.shadow;
 
 import com.github.litermc.vtil.accessor.ShipObjectServerWorldAccessor;
 import com.github.litermc.vtil.api.assemble.ShipAllocator;
@@ -10,7 +10,6 @@ import org.valkyrienskies.core.api.ships.QueryableShipData;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.impl.api.ServerShipInternal;
 import org.valkyrienskies.core.impl.game.ships.ShipData;
-import org.valkyrienskies.core.impl.networking.simple.SimplePacketNetworking;
 import org.valkyrienskies.core.internal.joints.VSJoint;
 import org.valkyrienskies.core.internal.ships.VsiMutableQueryableShipData;
 import org.valkyrienskies.core.internal.world.VsiPlayer;
@@ -18,15 +17,10 @@ import org.valkyrienskies.core.internal.world.VsiPlayer;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import org.objectweb.asm.Opcodes;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Coerce;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -36,36 +30,12 @@ import java.util.Set;
 
 @Mixin(org.valkyrienskies.core.impl.shadow.Er.class)
 public abstract class MixinShipObjectServerWorld implements ShipObjectServerWorldAccessor {
-	@Unique
-	private org.valkyrienskies.core.impl.shadow.Fg networking;
-
-	@Inject(method = "<init>", at = @At("RETURN"), remap = false)
-	public void init(
-		final @Coerce Object allShips,
-		final @Coerce Object chunkAllocators,
-		final @Coerce Object loadManager,
-		final org.valkyrienskies.core.impl.shadow.Fg networking,
-		final @Coerce Object blockTypes,
-		final @Coerce Object dimensionInfo,
-		final @Coerce Object connectivityManager,
-		final @Coerce Object shipDataProvider,
-		final @Coerce Object vsCoreProvider,
-		final CallbackInfo ci
-	) {
-		this.networking = networking;
-	}
-
 	@Shadow(remap = false)
 	protected abstract VsiMutableQueryableShipData<ShipData> a();
 
 	@Override
 	public VsiMutableQueryableShipData<ShipData> vtil$getAllShips() {
 		return this.a();
-	}
-
-	@Override
-	public SimplePacketNetworking vtil$getSimplePackets() {
-		return this.networking.c;
 	}
 
 	@Shadow(remap = false)
