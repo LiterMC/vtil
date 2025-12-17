@@ -1,15 +1,21 @@
 package com.github.litermc.vtil.util;
 
 import org.valkyrienskies.core.api.world.PhysLevel;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
+import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
+import net.minecraft.server.level.ServerLevel;
+
+import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.function.Consumer;
 
 public final class TaskUtil {
 	private static final Queue<Task> TICK_START_QUEUE = new PriorityBlockingQueue<>();
 	private static final Queue<Task> TICK_END_QUEUE = new PriorityBlockingQueue<>();
+	private static final Map<String, Queue<Consumer<PhysLevel>>> PHYSTICK_QUEUES = new ConcurrentHashMap<>();
 	private static volatile long tick = 0;
 
 	private TaskUtil() {}
@@ -39,6 +45,21 @@ public final class TaskUtil {
 		}
 	}
 
+	public static void onPhysTick(final PhysLevel world) {
+		final Queue<Consumer<PhysLevel>> queue = PHYSTICK_QUEUES.get(world.getDimension());
+		if (queue == null) {
+			return;
+		}
+		for (int i = queue.size(); i > 0; i--) {
+			final Consumer<PhysLevel> task = queue.remove();
+			task.accept(world);
+		}
+	}
+
+	public static void onServerLevelUnload(final ServerLevel level) {
+		PHYSTICK_QUEUES.remove(VSGameUtilsKt.getDimensionId(level));
+	}
+
 	public static void queueTickStart(final Runnable task) {
 		queueTickStart(0, task);
 	}
@@ -55,8 +76,14 @@ public final class TaskUtil {
 		TICK_END_QUEUE.add(new Task(tick + delay, task));
 	}
 
-	public static void queuePhysicsTick(final Consumer<PhysLevel> task) {
-		ValkyrienSkiesMod.getApi().getPhysTickEvent().once((event) -> task.accept(event.getWorld()));
+	public static void queuePhysicsTick(final ServerLevel level, final Consumer<PhysLevel> task) {
+		queuePhysicsTick(VSGameUtilsKt.getDimensionId(level), task);
+	}
+
+	// TODO: is string version necessary to expose?
+	private static void queuePhysicsTick(final String dimId, final Consumer<PhysLevel> task) {
+		final Queue<Consumer<PhysLevel>> queue = PHYSTICK_QUEUES.computeIfAbsent(dimId, (dimId0) -> new ConcurrentLinkedQueue<>());
+		queue.add(task);
 	}
 
 	record Task(long tick, Runnable task) implements Comparable<Task> {

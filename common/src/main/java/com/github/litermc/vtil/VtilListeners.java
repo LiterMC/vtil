@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerLevel;
 
 import org.valkyrienskies.core.api.ships.LoadedServerShip;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public final class VtilListeners {
 	public static void onModInit() {
 		VtilRegistry.register();
 		MoveApi.registerDefaultMovers();
+		ValkyrienSkiesMod.getApi().getPhysTickEvent().on((event) -> TaskUtil.onPhysTick(event.getWorld()));
 	}
 
 	public static void onServerLevelLoad(final ServerLevel level) {
@@ -28,6 +30,7 @@ public final class VtilListeners {
 
 	public static void onServerLevelUnload(final ServerLevel level) {
 		LevelUtil.onServerLevelUnload(level);
+		TaskUtil.onServerLevelUnload(level);
 	}
 
 	public static void preServerTick(final MinecraftServer server) {

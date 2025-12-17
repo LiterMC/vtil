@@ -302,12 +302,6 @@ public final class AssembleApi {
 
 			final Object moveData = moveableOld != null ? moveableOld.beforeMove(level, pos, target) : null;
 
-			level.removeBlockEntity(pos);
-
-			// Note: Block.UPDATE_SUPPRESS_DROPS only works for Level.destroyBlock which drop the block's item form,
-			// and it does not prevent contents from dropping.
-			level.setBlock(pos, AIR, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_MOVE_BY_PISTON);
-
 			level.setBlock(target, state, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_MOVE_BY_PISTON);
 			IMoveable<?> moveableNew = MoveApi.getMover(level.getBlockEntity(target));
 			if (moveableNew == null) {
@@ -316,6 +310,13 @@ public final class AssembleApi {
 			if (moveableNew != null) {
 				((IMoveable) (moveableNew)).afterMove(level, pos, target, moveData);
 			}
+		}
+		for (final BlockPos pos : blocks) {
+			level.removeBlockEntity(pos);
+
+			// Note: Block.UPDATE_SUPPRESS_DROPS only works for Level.destroyBlock which drop the block's item form,
+			// and it does not prevent contents from dropping.
+			level.setBlock(pos, AIR, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_MOVE_BY_PISTON);
 		}
 	}
 

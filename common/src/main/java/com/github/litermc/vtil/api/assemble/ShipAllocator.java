@@ -233,7 +233,7 @@ public final class ShipAllocator extends SavedData {
 		final BlockState AIR = Blocks.AIR.defaultBlockState();
 		final ServerShip ship = this.getShip(shipId);
 		ship.setTransformProvider(null);
-		TaskUtil.queuePhysicsTick((physWorld0) -> {
+		TaskUtil.queuePhysicsTick(level, (physWorld0) -> {
 			final VsiPhysLevel physWorld = ((VsiPhysLevel) (physWorld0));
 			physWorld.getJointsFromShip(ship.getId()).forEach((id) -> physWorld.removeJoint(id));
 		});
