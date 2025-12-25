@@ -112,8 +112,6 @@ c	org/valkyrienskies/core/impl/shadow/EY	org/valkyrienskies/core/impl/networking
 
 c	org/valkyrienskies/core/impl/shadow/Ez	org/valkyrienskies/core/impl/todo/LoadManager
 
-c	org/valkyrienskies/core/impl/shadow/Fe	org/valkyrienskies/core/impl/networking/UdpServerImpl
-
 c	org/valkyrienskies/core/impl/shadow/Fi	org/valkyrienskies/core/impl/networking/VSNetworking
 	f	Lorg/valkyrienskies/core/impl/shadow/EW;	a	udp
 	f	Lorg/valkyrienskies/core/impl/shadow/EW;	b	tcp
@@ -125,58 +123,27 @@ c	org/valkyrienskies/core/impl/shadow/Fi	org/valkyrienskies/core/impl/networking
 
 c	org/valkyrienskies/core/impl/shadow/FH	org/valkyrienskies/core/impl/pipelines/VSPhysicsPipelineStage
 
-c	org/valkyrienskies/core/impl/shadow/FK	org/valkyrienskies/core/impl/todo/VsPipelineImpl
+c	org/valkyrienskies/core/impl/shadow/FM	org/valkyrienskies/core/impl/todo/VsPipelineImpl
 
-c	org/valkyrienskies/core/impl/shadow/FM	org/valkyrienskies/core/impl/todo/DummyPhysLevel
+c	org/valkyrienskies/core/impl/shadow/FO	org/valkyrienskies/core/impl/todo/DummyPhysLevel
 
-c	org/valkyrienskies/core/impl/shadow/Fn	org/valkyrienskies/core/impl/networking/delta/DeltaEncodedChannelServerTCP
-
-c	org/valkyrienskies/core/impl/shadow/FO	org/valkyrienskies/core/impl/todo/PhysLevelImpl
-	f	Ljava/lang/String;	e	dimensionId
-	f	Lorg/valkyrienskies/core/impl/shadow/GX;	f	physWorldRef
+c	org/valkyrienskies/core/impl/shadow/FQ	org/valkyrienskies/core/impl/todo/PhysLevelImpl
+	f	Ljava/lang/String;	f	dimensionId
+	f	Lorg/valkyrienskies/core/impl/shadow/GZ;	b	physWorldRef
 	f	Lkotlin/jvm/functions/Function0;	g	physShipsProvider
-	f	Lorg/valkyrienskies/core/impl/shadow/FH;	h	pipeline
+	f	Lorg/valkyrienskies/core/impl/shadow/FJ;	h	pipeline
 	f	Lorg/valkyrienskies/core/impl/shadow/Er;	i	serverWorld
-	f	Lkotlin/jvm/functions/Function1;	g	physShipProvider
+	f	Lkotlin/jvm/functions/Function1;	j	physShipProvider
 	f	Ljava/util/Set;	k	disabledCollisionPairs
-	f	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;	b	shipTodisabledCollisionPairs
-	f	Ljava/util/Map;	c	joints
-	f	Ljava/util/Map;	l	shipToJointIds
+	f	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;	c	shipTodisabledCollisionPairs
+	f	Ljava/util/Map;	l	joints
+	f	Ljava/util/Map;	m	shipToJointIds
 	f	Ljava/util/HashSet;	d	loadedShipIds
+	f	I	e	levelPhysId
 	m	()Ljava/util/Map;	j	getJoints
 
-c	org/valkyrienskies/core/impl/shadow/Fp	org/valkyrienskies/core/impl/networking/simple/SimplePacketNetworkingImpl
-
-c	org/valkyrienskies/core/impl/shadow/Fq	org/valkyrienskies/core/impl/networking/simple/SimplePacketNetworking_Factory
-
-c	org/valkyrienskies/core/impl/shadow/Fw	org/valkyrienskies/core/impl/todo/DisabledCollisionPair
+c	org/valkyrienskies/core/impl/shadow/Fy	org/valkyrienskies/core/impl/todo/DisabledCollisionPair
 	f	J	b	ship0Id
 	f	J	c	ship1Id
 	m	()J	a	getShip0Id
 	m	()J	b	getShip1Id
-
-c	org/valkyrienskies/core/impl/shadow/h	org/valkyrienskies/core/impl/todo/TimezoneOffset
-	f	I	b	hours
-	f	I	c	minutes
-
-c	org/valkyrienskies/core/impl/shadow/HE	org/valkyrienskies/physics_api/joints/JointAndId
-
-c	org/valkyrienskies/core/impl/shadow/Ie	org/valkyrienskies/core/impl/todo/DeleteVoxelShapeUpdate2
-	f	I	a	regionX
-	f	I	b	regionY
-	f	I	c	regionZ
-
-c	org/valkyrienskies/core/impl/shadow/Ig	org/valkyrienskies/core/impl/todo/EmptyVoxelShapeUpdate2
-	f	I	a	regionX
-	f	I	b	regionY
-	f	I	c	regionZ
-	f	Z	d	overwriteExistingVoxels
-
-c	org/valkyrienskies/core/impl/shadow/Ij	org/valkyrienskies/physics_api/voxel/updates/SparseVoxelShapeUpdate2
-	f	I	b	regionX
-	f	I	c	regionY
-	f	I	d	regionZ
-	f	Lit/unimi/dsi/fastutil/shorts/ShortArrayList;	e	updatesPositions
-	f	Lit/unimi/dsi/fastutil/ints/IntArrayList;	f	updatesTypes
-
-c	org/valkyrienskies/core/impl/shadow/GX	org/valkyrienskies/physics_api/PhysicsWorldReference
