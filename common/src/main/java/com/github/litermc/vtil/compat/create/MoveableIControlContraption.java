@@ -3,6 +3,7 @@ package com.github.litermc.vtil.compat.create;
 import com.github.litermc.vtil.accessor.ContraptionHolder;
 import com.github.litermc.vtil.accessor.ControlledContraptionEntityAccessor;
 import com.github.litermc.vtil.api.assemble.IMoveable;
+import com.github.litermc.vtil.util.Pair;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -14,6 +15,7 @@ import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MoveableIControlContraption implements IMoveable<List<AbstractContraptionEntity>> {
@@ -48,19 +50,27 @@ public class MoveableIControlContraption implements IMoveable<List<AbstractContr
 			return null;
 		}
 		final Contraption contraption = entity.getContraption();
-		contraption.anchor = contraption.anchor.offset(offset);
-		entity.setPos(entity.position().add(offset.getX(), offset.getY(), offset.getZ()));
-		if (entity instanceof ControlledContraptionEntityAccessor ccea) {
-			ccea.vtil$setControllerPos(ccea.vtil$getControllerPos().offset(offset));
-		}
-		final AbstractContraptionEntity newEntity = (AbstractContraptionEntity) (entity.getType().create(level));
-		newEntity.restoreFrom(entity);
+
+		final List<Pair<Entity, Integer>> passengers = new ArrayList<>(entity.getPassengers().size());
 		entity.getPassengers().forEach((passenger) -> {
 			final Integer seat = contraption.getSeatMapping().get(passenger.getUUID());
 			if (seat != null) {
-				newEntity.addSittingPassenger(passenger, seat);
+				passengers.add(new Pair<>(passenger, seat));
 			}
 		});
+		entity.ejectPassengers();
+
+		contraption.anchor = contraption.anchor.offset(offset);
+		entity.setPos(entity.position().add(offset.getX(), offset.getY(), offset.getZ()));
+		if (entity instanceof final ControlledContraptionEntityAccessor ccea) {
+			ccea.vtil$setControllerPos(ccea.vtil$getControllerPos().offset(offset));
+		}
+
+		final AbstractContraptionEntity newEntity = (AbstractContraptionEntity) (entity.getType().create(level));
+		newEntity.restoreFrom(entity);
+
+		passengers.forEach((passenger) -> newEntity.addSittingPassenger(passenger.left(), passenger.right()));
+
 		entity.remove(Entity.RemovalReason.UNLOADED_TO_CHUNK);
 		level.addFreshEntity(newEntity);
 		return newEntity;
