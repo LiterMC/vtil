@@ -1,5 +1,7 @@
 package com.github.litermc.vtil.api.entity;
 
+import net.minecraft.world.entity.Entity;
+
 /**
  * ISpecialTeleportLogicEntity provides special logic for entity that switching dimension with Ship.
  */

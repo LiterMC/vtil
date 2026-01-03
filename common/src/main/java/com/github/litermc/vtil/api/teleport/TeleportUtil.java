@@ -69,16 +69,23 @@ public class TeleportUtil {
 	 * @return Teleported entity, or {@code null} if teleportation failed.
 	 */
 	public static <T extends Entity> T teleportEntity(final T entity, final ServerLevel newLevel, final Vec3 newPos) {
+		return teleportEntity(entity, newLevel, newPos, false);
+	}
+
+	public static <T extends Entity> T teleportEntity(final T entity, final ServerLevel newLevel, final Vec3 newPos, final boolean inner) {
 		final Vec3 oldPos = entity.position();
-		final List<Entity> passengers = List.copyOf(entity.getPassengers());
-		if (entity instanceof final ISpecialTeleportLogicEntity specialEntity) {
+
+		if (!inner && entity instanceof final ISpecialTeleportLogicEntity specialEntity) {
 			specialEntity.beforeDimentionalTeleport();
 		}
+
+		final List<Entity> passengers = List.copyOf(entity.getPassengers());
 		for (final Entity p : passengers) {
 			if (p instanceof final ISpecialTeleportLogicEntity specialEntity) {
 				specialEntity.beforeDimentionalTeleport();
 			}
 		}
+
 		final T newEntity;
 		if (entity instanceof final ServerPlayer player) {
 			player.teleportTo(newLevel, newPos.x, newPos.y, newPos.z, player.getYRot(), player.getXRot());
@@ -99,8 +106,9 @@ public class TeleportUtil {
 			newLevel.addDuringTeleport(newEntity);
 			entity.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
 		}
+
 		for (final Entity p : passengers) {
-			final Entity newPassenger = teleportEntity(p, newLevel, p.position().subtract(oldPos).add(newPos));
+			final Entity newPassenger = teleportEntity(p, newLevel, p.position().subtract(oldPos).add(newPos), true);
 			if (newPassenger != null) {
 				newPassenger.startRiding(newEntity, true);
 			}
