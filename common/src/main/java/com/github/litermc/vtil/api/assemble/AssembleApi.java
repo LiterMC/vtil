@@ -132,6 +132,7 @@ public final class AssembleApi {
 		for (final Entity entity : attachableEntities) {
 			final Vec3 pos = entity.position();
 			entity.setPos(pos.x + offset.x, pos.y + offset.y, pos.z + offset.z);
+			entity.hasImpulse = true; // force to send update packet
 		}
 
 		sendBlockUpdates(level, offset, blockStates);
