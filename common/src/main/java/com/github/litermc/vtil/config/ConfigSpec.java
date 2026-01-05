@@ -50,7 +50,7 @@ public final class ConfigSpec {
 	public static void syncServer(Path path) {
 		if (Config.enableShadowMixins) {
 			Config.reuseShipChunks = REUSE_SHIP_CHUNKS.get();
-			Constants.LOG.info("vtil.reuse_ship_chunks = {}", Config.reuse_ship_chunks);
+			Constants.LOG.info("vtil.reuse_ship_chunks = {}", Config.reuseShipChunks);
 			Config.recycleEmptyShips = RECYCLE_EMPTY_SHIPS.get();
 		} else {
 			Config.reuseShipChunks = false;
