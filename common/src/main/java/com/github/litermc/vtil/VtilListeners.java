@@ -4,6 +4,7 @@ import com.github.litermc.vtil.accessor.ShipObjectServerAccessor;
 import com.github.litermc.vtil.api.assemble.MoveApi;
 import com.github.litermc.vtil.api.attachment.IServerTickListener;
 import com.github.litermc.vtil.util.LevelUtil;
+import com.github.litermc.vtil.util.ShipQuerier;
 import com.github.litermc.vtil.util.TaskUtil;
 
 import net.minecraft.server.MinecraftServer;
