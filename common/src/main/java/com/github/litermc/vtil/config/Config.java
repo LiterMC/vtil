@@ -10,8 +10,9 @@ public final class Config {
 
 	/**
 	 * Reuse deleted ship's chunks to assemble new ships when possible.
+	 * Warn: Compatible issues may occur if enabled, only report issues when this is set to false.
 	 */
-	public static boolean reuseShipChunks = true;
+	public static boolean reuseShipChunks = false;
 
 	/**
 	 * Recycle ships that no longer contains any blocks.
