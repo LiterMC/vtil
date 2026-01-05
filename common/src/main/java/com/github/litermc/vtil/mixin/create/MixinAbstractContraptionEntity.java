@@ -42,7 +42,8 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
 	@Override
 	public void beforeDimentionalTeleport() {
 		this.isTeleporting = true;
-		this.seatMapping = Map.copyOf(this.getContraption().getSeatMapping());
+		final Contraption contraption = this.getContraption();
+		this.seatMapping = contraption == null ? null : Map.copyOf(contraption.getSeatMapping());
 	}
 
 	@Override
@@ -54,6 +55,9 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
 		}
 		final Map<UUID, Integer> seatMapping = ((AbstractContraptionEntityAccessor) (old)).vtil$getSeatMapping();
 		this.seatMapping = null;
+		if (seatMapping == null) {
+			return;
+		}
 		this.getPassengers().forEach((passenger) -> {
 			final Integer seat = seatMapping.get(passenger.getUUID());
 			if (seat != null) {

@@ -46,6 +46,7 @@ public final class VtilListeners {
 	}
 
 	public static void postServerTick(final MinecraftServer server) {
+		ShipQuerier.postServerTick(server);
 		TaskUtil.postServerTick();
 	}
 }

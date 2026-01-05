@@ -51,16 +51,22 @@ public class MoveableIControlContraption implements IMoveable<List<AbstractContr
 		}
 		final Contraption contraption = entity.getContraption();
 
-		final List<Pair<Entity, Integer>> passengers = new ArrayList<>(entity.getPassengers().size());
-		entity.getPassengers().forEach((passenger) -> {
-			final Integer seat = contraption.getSeatMapping().get(passenger.getUUID());
-			if (seat != null) {
-				passengers.add(new Pair<>(passenger, seat));
-			}
-		});
-		entity.ejectPassengers();
+		final List<Pair<Entity, Integer>> passengers;
+		if (contraption == null) {
+			passengers = null;
+		} else {
+			passengers = new ArrayList<>(entity.getPassengers().size());
+			entity.getPassengers().forEach((passenger) -> {
+				final Integer seat = contraption.getSeatMapping().get(passenger.getUUID());
+				if (seat != null) {
+					passengers.add(new Pair<>(passenger, seat));
+				}
+			});
+			entity.ejectPassengers();
 
-		contraption.anchor = contraption.anchor.offset(offset);
+			contraption.anchor = contraption.anchor.offset(offset);
+		}
+
 		entity.setPos(entity.position().add(offset.getX(), offset.getY(), offset.getZ()));
 		if (entity instanceof final ControlledContraptionEntityAccessor ccea) {
 			ccea.vtil$setControllerPos(ccea.vtil$getControllerPos().offset(offset));
@@ -69,7 +75,9 @@ public class MoveableIControlContraption implements IMoveable<List<AbstractContr
 		final AbstractContraptionEntity newEntity = (AbstractContraptionEntity) (entity.getType().create(level));
 		newEntity.restoreFrom(entity);
 
-		passengers.forEach((passenger) -> newEntity.addSittingPassenger(passenger.left(), passenger.right()));
+		if (contraption != null) {
+			passengers.forEach((passenger) -> newEntity.addSittingPassenger(passenger.left(), passenger.right()));
+		}
 
 		entity.remove(Entity.RemovalReason.UNLOADED_TO_CHUNK);
 		level.addFreshEntity(newEntity);
