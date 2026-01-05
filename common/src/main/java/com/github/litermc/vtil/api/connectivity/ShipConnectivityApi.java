@@ -37,29 +37,43 @@ public final class ShipConnectivityApi {
 		return false;
 	}
 
+	public static void getAllConnectedShips(final VsiPhysLevel world, final long shipId, final Set<PhysShip> result) {
+		final PhysShip startShip = world.getShipById(shipId);
+		final boolean hadSelf = result.contains(startShip);
+		getAllConnectedShipsAndSelf(world, shipId, result);
+		if (!hadSelf) {
+			result.remove(startShip);
+		}
+	}
+
 	public static Set<PhysShip> getAllConnectedShipsAndSelf(final VsiPhysLevel world, final long shipId) {
+		final Set<PhysShip> ships = new HashSet<>();
+		getAllConnectedShipsAndSelf(world, shipId, ships);
+		return ships;
+	}
+
+	public static void getAllConnectedShipsAndSelf(final VsiPhysLevel world, final long shipId, final Set<PhysShip> result) {
 		final PhysShip startShip = world.getShipById(shipId);
 		if (startShip == null) {
-			return Set.of();
+			return;
 		}
+		result.add(startShip);
 		final Collection<Integer> joints = world.getJointsFromShip(shipId);
 		if (joints.isEmpty()) {
-			return Set.of(startShip);
+			return;
 		}
 		final Set<PhysShip> ships = new HashSet<>(joints.size() + 1);
-		ships.add(startShip);
 		for (final Integer jointId : joints) {
 			final VSJoint joint = world.getJointById(jointId);
 			final Long id0 = joint.getShipId0();
 			if (id0 != null) {
-				addConnectedShips(world, world.getShipById(id0), ships);
+				addConnectedShips(world, world.getShipById(id0), result);
 			}
 			final Long id1 = joint.getShipId1();
 			if (id1 != null) {
-				addConnectedShips(world, world.getShipById(id1), ships);
+				addConnectedShips(world, world.getShipById(id1), result);
 			}
 		}
-		return ships;
 	}
 
 	private static void addConnectedShips(

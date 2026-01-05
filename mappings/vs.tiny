@@ -100,6 +100,12 @@ c	org/valkyrienskies/core/impl/shadow/Er	org/valkyrienskies/core/impl/game/ships
 	m	(Lorg/joml/Vector3ic;ZDLjava/lang/String;)Ljava/util/concurrent/CompletableFuture;	a	createShipAtBlockAsync
 	m	(Lorg/joml/Vector3ic;ZDLjava/lang/String;)Lorg/valkyrienskies/core/impl/game/ships/ShipData;	b	createShipAtBlock
 
+c	org/valkyrienskies/core/impl/shadow/Er$b	org/valkyrienskies/core/impl/game/ships/ShipObjectServerWorld$LevelVoxelUpdates
+	f	Ljava/lang/String;	a	dimensionId
+	f	Ljava/util/List;	b	updates
+	m	()Ljava/lang/String;	a	getDimensionId
+	m	()Ljava/util/List;	b	getUpdates
+
 c	org/valkyrienskies/core/impl/shadow/Et	org/valkyrienskies/core/impl/game/ships/ShipObjectWorld
 
 c	org/valkyrienskies/core/impl/shadow/Eh	org/valkyrienskies/core/impl/game/ships/DragManager
@@ -147,3 +153,11 @@ c	org/valkyrienskies/core/impl/shadow/Fy	org/valkyrienskies/core/impl/todo/Disab
 	f	J	c	ship1Id
 	m	()J	a	getShip0Id
 	m	()J	b	getShip1Id
+
+c	org/valkyrienskies/core/impl/shadow/Il	org/valkyrienskies/physics_api/voxel/updates/IVoxelShapeUpdate
+	m	()I	a	getRegionX
+	m	()I	b	getRegionY
+	m	()I	c	getRegionZ
+	m	()Lorg/valkyrienskies/core/impl/shadow/Ip;	d	getVoxelShapeUpdateType
+
+c	org/valkyrienskies/core/impl/shadow/Ip	org/valkyrienskies/physics_api/voxel/updates/VoxelShapeUpdateType
