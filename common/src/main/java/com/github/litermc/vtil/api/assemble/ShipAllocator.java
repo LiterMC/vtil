@@ -150,6 +150,10 @@ public final class ShipAllocator extends SavedData {
 			return false;
 		}
 
+		Constants.LOG.debug("ShipAllocator: Caching ship {} in {}", shipId, ship.getChunkClaimDimension());
+		this.avaliableShips.add(shipId);
+		this.pendingShips.remove(shipId);
+
 		final ServerShip shipData = this.shipWorld.getAllShips().getById(shipId);
 		if (shipData != null) {
 			final ArrayList<VsiPlayer> players = new ArrayList<>(8);
@@ -172,9 +176,6 @@ public final class ShipAllocator extends SavedData {
 		final ShipTeleportData teleportData = new ShipTeleportDataImpl(SECURE_SHIP_STORAGE, ZERO_QUATD, ZERO_VEC3D, ZERO_VEC3D, null, SECURE_SHIP_SCALE, ship.getTransform().getPositionInShip());
 		this.shipWorld.teleportShip(ship, teleportData);
 
-		Constants.LOG.debug("ShipAllocator: Caching ship {} in {}", shipId, ship.getChunkClaimDimension());
-		this.avaliableShips.add(shipId);
-		this.pendingShips.remove(shipId);
 		this.setDirty();
 		return true;
 	}
