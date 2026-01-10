@@ -26,7 +26,7 @@ c	org/valkyrienskies/core/impl/shadow/CR	org/valkyrienskies/core/impl/todo/Chunk
 
 c	org/valkyrienskies/core/impl/shadow/DL	org/valkyrienskies/core/impl/util/AerodynamicUtilsImpl
 
-c	org/valkyrienskies/core/impl/shadow/DN	org/valkyrienskies/core/impl/todo/BlockTypes
+c	org/valkyrienskies/core/impl/shadow/DN	org/valkyrienskies/core/impl/todo/VsBlockTypes
 
 c	org/valkyrienskies/core/impl/shadow/dt	org/valkyrienskies/core/impl/todo/RegexValidator
 
