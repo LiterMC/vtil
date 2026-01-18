@@ -34,12 +34,6 @@ c	org/valkyrienskies/core/impl/shadow/DW	org/valkyrienskies/core/impl/game/conne
 
 c	org/valkyrienskies/core/impl/shadow/Ej	org/valkyrienskies/core/impl/game/ships/DummyShipWorldServer
 
-c	org/valkyrienskies/core/impl/shadow/EM	org/valkyrienskies/core/impl/todo/ShipWorldStates
-	f	Lorg/valkyrienskies/core/impl/networking/simple/SimplePacketNetworking;	simplePackets	b
-	f	Ljava/lang/Iterable;	players	d
-	f	Lcom/google/common/collect/ImmutableMap;	playerTrackingShips	g
-	f	Lcom/google/common/collect/ImmutableMap;	playerTrackingPhysicsEntities	h
-
 c	org/valkyrienskies/core/impl/shadow/Em	org/valkyrienskies/core/impl/game/ships/QueryableShipDataImpl
 
 c	org/valkyrienskies/core/impl/shadow/Eo	org/valkyrienskies/core/impl/game/ships/ShipObject
@@ -61,6 +55,8 @@ c	org/valkyrienskies/core/impl/shadow/Er	org/valkyrienskies/core/impl/game/ships
 	f	Lorg/valkyrienskies/core/impl/shadow/Ez;	c	loadManager
 	f	Lorg/valkyrienskies/core/impl/shadow/DN;	z	blockTypes
 	f	Ljava/util/Map;	d	dimensionInfos
+	f	Lorg/valkyrienskies/core/impl/shadow/DW;	A	connectivityHandler
+	f	Lorg/valkyrienskies/core/impl/shadow/Ge;	e	stageManager
 	f	Ljava/util/Set;	D	lastTickPlayers
 	f	Ljava/util/Set;	E	players
 	f	Lorg/valkyrienskies/core/internal/VsiGameServer;	F	gameServer
@@ -78,12 +74,12 @@ c	org/valkyrienskies/core/impl/shadow/Er	org/valkyrienskies/core/impl/game/ships
 	f	Ljava/util/List;	o	deletedShipObjects
 	f	Ljava/util/List;	p	deletedPhysicsEntities
 	f	Ljava/util/List;	q	lastTickDeletedShipObjects
-	f	Ljava/util/List;	r	jointsCreatedThisTick
-	f	Ljava/util/Map;	s	joints
-	f	Ljava/util/List;	t	jointsDeletedThisTick
-	f	Ljava/util/List;	u	disabledCollisionPairsThisTick
-	f	Ljava/util/List;	v	enabledCollisionPairsThisTick
-	f	Lorg/valkyrienskies/core/impl/shadow/Fe;	I	udpServer
+	f	Ljava/util/List;	r	unused_jointsCreatedThisTick
+	f	Ljava/util/Map;	s	unused_joints
+	f	Ljava/util/List;	t	unused_jointsDeletedThisTick
+	f	Ljava/util/List;	u	unused_disabledCollisionPairsThisTick
+	f	Ljava/util/List;	v	unused_enabledCollisionPairsThisTick
+	f	Lorg/valkyrienskies/core/impl/shadow/Fg;	I	udpServer
 	f	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;	w	shipToVoxelUpdates
 	f	Lorg/valkyrienskies/core/impl/shadow/DL;	x	aerodynamicUtils
 	m	(Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;Lorg/valkyrienskies/core/impl/game/ChunkAllocatorProvider;Lorg/valkyrienskies/core/impl/shadow/Ez;Lorg/valkyrienskies/core/impl/shadow/Fi;Lorg/valkyrienskies/core/impl/shadow/DN;Ljava/util/Map;Lorg/valkyrienskies/core/impl/shadow/DW;Lorg/valkyrienskies/core/impl/game/ships/ShipData$Factory;Ljavax/inject/Provider;)V	<init>	<init>

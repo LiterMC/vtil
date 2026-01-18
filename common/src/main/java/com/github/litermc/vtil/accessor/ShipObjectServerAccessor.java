@@ -8,7 +8,7 @@ import java.util.Collection;
 
 public interface ShipObjectServerAccessor {
 	static final String JDESC = "Lorg/valkyrienskies/core/impl/shadow/Eq;";
-	static final String M_applyAttachmentInterfaces = "";
+	static final String M_applyAttachmentInterfaces = "a";
 
 	void vtil$reinitDefaultAttachments();
 	Collection<IServerTickListener> vtil$getServerTickListeners();
