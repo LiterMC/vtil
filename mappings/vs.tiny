@@ -28,8 +28,6 @@ c	org/valkyrienskies/core/impl/shadow/DL	org/valkyrienskies/core/impl/util/Aerod
 
 c	org/valkyrienskies/core/impl/shadow/DN	org/valkyrienskies/core/impl/todo/VsBlockTypes
 
-c	org/valkyrienskies/core/impl/shadow/dt	org/valkyrienskies/core/impl/todo/RegexValidator
-
 c	org/valkyrienskies/core/impl/shadow/DW	org/valkyrienskies/core/impl/game/connectivity/ConnectivityHandler
 
 c	org/valkyrienskies/core/impl/shadow/Ej	org/valkyrienskies/core/impl/game/ships/DummyShipWorldServer
@@ -114,6 +112,8 @@ c	org/valkyrienskies/core/impl/shadow/EY	org/valkyrienskies/core/impl/networking
 
 c	org/valkyrienskies/core/impl/shadow/Ez	org/valkyrienskies/core/impl/todo/LoadManager
 
+c	org/valkyrienskies/core/impl/shadow/FH	org/valkyrienskies/core/impl/pipelines/VSPhysicsPipelineStage
+
 c	org/valkyrienskies/core/impl/shadow/Fi	org/valkyrienskies/core/impl/networking/VSNetworking
 	f	Lorg/valkyrienskies/core/impl/shadow/EW;	a	udp
 	f	Lorg/valkyrienskies/core/impl/shadow/EW;	b	tcp
@@ -122,8 +122,6 @@ c	org/valkyrienskies/core/impl/shadow/Fi	org/valkyrienskies/core/impl/networking
 	f	Z	d	clientUsesUDP
 	f	Z	e	serverUsesUDP
 	f	Lorg/valkyrienskies/core/api/event/RegisteredListener;	f	prevStateHandler
-
-c	org/valkyrienskies/core/impl/shadow/FH	org/valkyrienskies/core/impl/pipelines/VSPhysicsPipelineStage
 
 c	org/valkyrienskies/core/impl/shadow/FM	org/valkyrienskies/core/impl/todo/VsPipelineImpl
 

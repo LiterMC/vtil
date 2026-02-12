@@ -10,6 +10,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Quaterniondc;
 import org.joml.Vector3dc;
 import org.valkyrienskies.core.api.ships.LoadedServerShip;
+import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.ServerShipTransformProvider;
 import org.valkyrienskies.core.api.ships.properties.ShipTransform;
 import org.valkyrienskies.core.internal.ShipTeleportData;
@@ -26,7 +27,7 @@ public class TeleportUtil {
 	 * @param ship Teleporting ship
 	 * @param data Teleport data
 	 */
-	public static void teleportShip(final LoadedServerShip ship, final TeleportData data) {
+	public static void teleportShip(final ServerShip ship, final TeleportData data) {
 		final ServerLevel level = data.level();
 		final String dimension = VSGameUtilsKt.getDimensionId(level);
 		final VsiServerShipWorld world = VSGameUtilsKt.getShipObjectWorld(level);
@@ -37,8 +38,17 @@ public class TeleportUtil {
 		final Quaterniondc rotation = data.rotation();
 		final Vector3dc velocity = data.velocity();
 		final Vector3dc omega = data.omega();
+		final double scale = ship.getTransform().getShipToWorldScaling().y();
 
-		final ShipTeleportData teleportData = ValkyrienSkiesMod.getVsCore().newShipTeleportData(newPos, rotation, velocity, omega, dimension, null, ship.getTransform().getPositionInShip());
+		final ShipTeleportData teleportData = ValkyrienSkiesMod.getVsCore().newShipTeleportData(
+			newPos,
+			rotation,
+			velocity,
+			omega,
+			dimension,
+			scale,
+			ship.getTransform().getPositionInShip()
+		);
 		world.teleportShip(ship, teleportData);
 		if (velocity.lengthSquared() != 0 || omega.lengthSquared() != 0) {
 			final ServerShipTransformProvider oldProvider = ship.getTransformProvider();

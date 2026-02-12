@@ -2,6 +2,7 @@ package com.github.litermc.vtil.mixin.valkyrienskies.shadow;
 
 import com.github.litermc.vtil.accessor.ShipObjectServerWorldAccessor;
 import com.github.litermc.vtil.api.assemble.ShipAllocator;
+import com.github.litermc.vtil.api.storage.ShipDataStorage;
 import com.github.litermc.vtil.config.Config;
 
 import com.google.common.collect.ImmutableMap;
@@ -20,7 +21,9 @@ import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -44,6 +47,11 @@ public abstract class MixinShipObjectServerWorld implements ShipObjectServerWorl
 	@Override
 	public ImmutableMap<VsiPlayer, ImmutableSet<ServerShipInternal>> vtil$getPlayersToTrackedShips() {
 		return this.c();
+	}
+
+	@Inject(method = "deleteShip(Lorg/valkyrienskies/core/api/ships/ServerShip;)V", at = @At("HEAD"), remap = false)
+	public void deleteShip$head(final ServerShip ship, final CallbackInfo ci) {
+		ShipDataStorage.onShipRemoved(ship.getId());
 	}
 
 	@WrapOperation(

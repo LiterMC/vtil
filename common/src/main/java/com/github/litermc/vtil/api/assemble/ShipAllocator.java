@@ -5,6 +5,7 @@ import com.github.litermc.vtil.accessor.AttachmentHolderAccessor;
 import com.github.litermc.vtil.accessor.ShipObjectServerAccessor;
 import com.github.litermc.vtil.accessor.ShipObjectServerWorldAccessor;
 import com.github.litermc.vtil.api.attachment.IPermanentAttachment;
+import com.github.litermc.vtil.api.storage.ShipDataStorage;
 import com.github.litermc.vtil.config.Config;
 import com.github.litermc.vtil.platform.PlatformHelper;
 import com.github.litermc.vtil.util.LevelUtil;
@@ -139,6 +140,7 @@ public final class ShipAllocator extends SavedData {
 	 */
 	public boolean putShip(final ServerShip ship) {
 		final long shipId = ship.getId();
+		ShipDataStorage.onShipRemoved(shipId);
 		final ServerLevel level = LevelUtil.getLevel(ship.getChunkClaimDimension());
 		ship.setSlug(REUSABLE_SHIP_SLUG_PREFIX + shipId);
 		ship.setStatic(true);
