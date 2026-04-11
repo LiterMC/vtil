@@ -46,8 +46,8 @@ c	org/valkyrienskies/core/impl/shadow/Es	org/valkyrienskies/core/impl/game/ships
 	f	Lorg/valkyrienskies/core/impl/shadow/Fn;	d	shipDataChannel
 	f	Ljava/util/Map;	e	physicsListeners
 	f	Ljava/util/Map;	f	serverTickListeners
-	m	(Ljava/lang/Class;Ljava/lang/Object;)V	a	applyAttachmentInterfaces
 	m	()Lorg/valkyrienskies/core/impl/game/ships/ShipData;	c	getShipData
+	m	(Ljava/lang/Class;Ljava/lang/Object;)V	a	applyAttachmentInterfaces
 
 c	org/valkyrienskies/core/impl/shadow/Et	org/valkyrienskies/core/impl/game/ships/ShipObjectServerWorld
 	f	Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;	a	allShips
@@ -111,9 +111,9 @@ c	org/valkyrienskies/core/impl/shadow/Ev	org/valkyrienskies/core/impl/game/ships
 
 c	org/valkyrienskies/core/impl/shadow/Eh	org/valkyrienskies/core/impl/game/ships/DragManager
 
-c	org/valkyrienskies/core/impl/shadow/Fb	org/valkyrienskies/core/impl/networking/NetworkChannel
-
 c	org/valkyrienskies/core/impl/shadow/Ey	org/valkyrienskies/core/impl/game/ships/WingManager
+
+c	org/valkyrienskies/core/impl/shadow/Fb	org/valkyrienskies/core/impl/networking/NetworkChannel
 
 c	org/valkyrienskies/core/impl/shadow/Fd	org/valkyrienskies/core/impl/networking/PacketType
 

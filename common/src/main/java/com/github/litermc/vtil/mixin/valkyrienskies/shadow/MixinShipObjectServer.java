@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Collection;
 import java.util.HashMap;
 
-@Mixin(org.valkyrienskies.core.impl.shadow.Eq.class)
+@Mixin(org.valkyrienskies.core.impl.shadow.Es.class)
 public abstract class MixinShipObjectServer implements ShipObjectServerAccessor {
 	@Unique
 	private boolean initing = true;
@@ -24,7 +24,7 @@ public abstract class MixinShipObjectServer implements ShipObjectServerAccessor 
 
 	@Override
 	public void vtil$reinitDefaultAttachments() {
-		final var wingManager = new org.valkyrienskies.core.impl.shadow.Ew();
+		final var wingManager = new org.valkyrienskies.core.impl.shadow.Ey();
 		wingManager.createWingGroup(/* isContraption */ false);
 		this.setAttachment(wingManager);
 		// this.setAttachment(new org.valkyrienskies.core.impl.shadow.Eh()); // marked as permanent

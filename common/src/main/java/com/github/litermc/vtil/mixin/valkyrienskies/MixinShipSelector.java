@@ -3,7 +3,7 @@ package com.github.litermc.vtil.mixin.valkyrienskies;
 import com.github.litermc.vtil.api.assemble.ShipAllocator;
 
 import org.valkyrienskies.core.api.ships.Ship;
-import org.valkyrienskies.mod.common.command.ShipSelector;
+import org.valkyrienskies.mod.common.command.arguments.ShipSelector;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

@@ -31,7 +31,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-@Mixin(org.valkyrienskies.core.impl.shadow.Er.class)
+@Mixin(org.valkyrienskies.core.impl.shadow.Et.class)
 public abstract class MixinShipObjectServerWorld implements ShipObjectServerWorldAccessor {
 	@Shadow(remap = false)
 	protected abstract VsiMutableQueryableShipData<ShipData> a();
@@ -42,11 +42,11 @@ public abstract class MixinShipObjectServerWorld implements ShipObjectServerWorl
 	}
 
 	@Shadow(remap = false)
-	protected abstract ImmutableMap<VsiPlayer, ImmutableSet<ServerShipInternal>> c();
+	protected abstract ImmutableMap<VsiPlayer, ImmutableSet<ServerShipInternal>> d();
 
 	@Override
 	public ImmutableMap<VsiPlayer, ImmutableSet<ServerShipInternal>> vtil$getPlayersToTrackedShips() {
-		return this.c();
+		return this.d();
 	}
 
 	@Inject(method = "deleteShip(Lorg/valkyrienskies/core/api/ships/ServerShip;)V", at = @At("HEAD"), remap = false)
@@ -62,7 +62,7 @@ public abstract class MixinShipObjectServerWorld implements ShipObjectServerWorl
 		),
 		remap = false
 	)
-	public void postTick$deleteShip(final org.valkyrienskies.core.impl.shadow.Er self, final ServerShip ship, final Operation<Void> operation) {
+	public void postTick$deleteShip(final org.valkyrienskies.core.impl.shadow.Et self, final ServerShip ship, final Operation<Void> operation) {
 		// Hope VS won't have two deleteShip invoke sites in the future
 		if (!Config.recycleEmptyShips) {
 			operation.call(self, ship);

@@ -8,8 +8,8 @@ import org.valkyrienskies.core.internal.ships.VsiMutableQueryableShipData;
 import org.valkyrienskies.core.internal.world.VsiPlayer;
 
 public interface ShipObjectServerWorldAccessor {
-	static final String JDESC = "Lorg/valkyrienskies/core/impl/shadow/Er;";
-	static final String M_postTick = "h";
+	static final String JDESC = "Lorg/valkyrienskies/core/impl/shadow/Et;";
+	static final String M_postTick = "i";
 
 	VsiMutableQueryableShipData<ShipData> vtil$getAllShips();
 	ImmutableMap<VsiPlayer, ImmutableSet<ServerShipInternal>> vtil$getPlayersToTrackedShips();
