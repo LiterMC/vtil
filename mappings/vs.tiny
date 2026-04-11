@@ -165,3 +165,11 @@ c	org/valkyrienskies/core/impl/shadow/FB	org/valkyrienskies/core/impl/todo/Disab
 	f	J	c	ship1Id
 	m	()J	a	getShip0Id
 	m	()J	b	getShip1Id
+
+c	org/valkyrienskies/core/impl/shadow/It	org/valkyrienskies/physics_api/todo/VoxelUpdateType
+
+c	org/valkyrienskies/core/impl/shadow/Ip	org/valkyrienskies/physics_api/todo/VsiVoxelUpdate
+	m	()I	a	getX
+	m	()I	b	getY
+	m	()I	c	getZ
+	m	()Lorg/valkyrienskies/core/impl/shadow/It;	d	getType
