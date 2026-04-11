@@ -6,6 +6,8 @@ c	org/valkyrienskies/core/impl/shadow/CA	org/valkyrienskies/core/api_impl/attach
 	f	Ljava/util/Set;	d	removedAttachments
 	f	Ljava/util/Map;	e	attachments
 	f	Ljava/util/Map;	f	invaildAttachments
+	m	(Ljava/lang/Class;)Ljava/lang/Iterable;	a	filterAttachments
+	m	(Ljava/lang/String;Ljava/lang/Object;)Z	a	trySetAttachment
 
 c	org/valkyrienskies/core/impl/shadow/CA$a	org/valkyrienskies/core/api_impl/attachment/AttachmentHolderImpl$Holder
 	f	Ljava/lang/Object;	a	attachment
@@ -32,13 +34,13 @@ c	org/valkyrienskies/core/impl/shadow/DW	org/valkyrienskies/core/impl/game/conne
 
 c	org/valkyrienskies/core/impl/shadow/Ej	org/valkyrienskies/core/impl/game/ships/DummyShipWorldServer
 
-c	org/valkyrienskies/core/impl/shadow/Em	org/valkyrienskies/core/impl/game/ships/QueryableShipDataImpl
+c	org/valkyrienskies/core/impl/shadow/Eo	org/valkyrienskies/core/impl/game/ships/QueryableShipDataImpl
 
-c	org/valkyrienskies/core/impl/shadow/Eo	org/valkyrienskies/core/impl/game/ships/ShipObject
+c	org/valkyrienskies/core/impl/shadow/Eq	org/valkyrienskies/core/impl/game/ships/ShipObject
 
-c	org/valkyrienskies/core/impl/shadow/Ep	org/valkyrienskies/core/impl/game/ships/ShipObjectClient
+c	org/valkyrienskies/core/impl/shadow/Er	org/valkyrienskies/core/impl/game/ships/ShipObjectClient
 
-c	org/valkyrienskies/core/impl/shadow/Eq	org/valkyrienskies/core/impl/game/ships/ShipObjectServer
+c	org/valkyrienskies/core/impl/shadow/Es	org/valkyrienskies/core/impl/game/ships/ShipObjectServer
 	f	Lorg/valkyrienskies/core/impl/game/ships/ShipData;	b	shipData
 	f	I	c	shipTeleportId
 	f	Lorg/valkyrienskies/core/impl/shadow/Fn;	d	shipDataChannel
@@ -47,111 +49,119 @@ c	org/valkyrienskies/core/impl/shadow/Eq	org/valkyrienskies/core/impl/game/ships
 	m	(Ljava/lang/Class;Ljava/lang/Object;)V	a	applyAttachmentInterfaces
 	m	()Lorg/valkyrienskies/core/impl/game/ships/ShipData;	c	getShipData
 
-c	org/valkyrienskies/core/impl/shadow/Er	org/valkyrienskies/core/impl/game/ships/ShipObjectServerWorld
+c	org/valkyrienskies/core/impl/shadow/Et	org/valkyrienskies/core/impl/game/ships/ShipObjectServerWorld
 	f	Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;	a	allShips
-	f	Lorg/valkyrienskies/core/impl/game/ChunkAllocatorProvider;	b	chunkAllocatorProvider
-	f	Lorg/valkyrienskies/core/impl/shadow/Ez;	c	loadManager
-	f	Lorg/valkyrienskies/core/impl/shadow/DN;	z	blockTypes
-	f	Ljava/util/Map;	d	dimensionInfos
-	f	Lorg/valkyrienskies/core/impl/shadow/DW;	A	connectivityHandler
-	f	Lorg/valkyrienskies/core/impl/shadow/Ge;	e	stageManager
-	f	Ljava/util/Set;	D	lastTickPlayers
-	f	Ljava/util/Set;	E	players
-	f	Lorg/valkyrienskies/core/internal/VsiGameServer;	F	gameServer
-	f	Lorg/valkyrienskies/core/impl/shadow/Em;	G	loadedShips
-	f	Ljava/util/Map;	f	loadedPhysicsEntities
-	f	Ljava/util/Map;	g	dimensionToGroundBodyId
-	f	Ljava/util/ArrayList;	h	dimensionsAddedThisTick
-	f	Ljava/util/ArrayList;	i	dimensionsRemovedThisTick
-	f	Ljava/util/ArrayList;	j	voxelShapeUpdatesList
-	f	Ljava/util/Set;	H	disabledCollisionPairs
-	f	Ljava/util/List;	k	newShipObjects
-	f	Ljava/util/List;	l	newPhysicsEntities
-	f	Ljava/util/List;	m	updatedShipObjects
-	f	Ljava/util/List;	n	updatedPhysicsEntities
-	f	Ljava/util/List;	o	deletedShipObjects
-	f	Ljava/util/List;	p	deletedPhysicsEntities
-	f	Ljava/util/List;	q	lastTickDeletedShipObjects
-	f	Ljava/util/List;	r	unused_jointsCreatedThisTick
-	f	Ljava/util/Map;	s	unused_joints
-	f	Ljava/util/List;	t	unused_jointsDeletedThisTick
-	f	Ljava/util/List;	u	unused_disabledCollisionPairsThisTick
-	f	Ljava/util/List;	v	unused_enabledCollisionPairsThisTick
-	f	Lorg/valkyrienskies/core/impl/shadow/Fg;	I	udpServer
-	f	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;	w	shipToVoxelUpdates
-	f	Lorg/valkyrienskies/core/impl/shadow/DL;	x	aerodynamicUtils
-	m	(Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;Lorg/valkyrienskies/core/impl/game/ChunkAllocatorProvider;Lorg/valkyrienskies/core/impl/shadow/Ez;Lorg/valkyrienskies/core/impl/shadow/Fi;Lorg/valkyrienskies/core/impl/shadow/DN;Ljava/util/Map;Lorg/valkyrienskies/core/impl/shadow/DW;Lorg/valkyrienskies/core/impl/game/ships/ShipData$Factory;Ljavax/inject/Provider;)V	<init>	<init>
+	f	Lorg/valkyrienskies/core/impl/shadow/Ek;	b	jointManager
+	f	Lorg/valkyrienskies/core/impl/game/ChunkAllocatorProvider;	c	chunkAllocatorProvider
+	f	Lorg/valkyrienskies/core/impl/shadow/EB;	d	loadManager
+	f	Lorg/valkyrienskies/core/impl/shadow/DN;	A	blockTypes
+	f	Ljava/util/Map;	e	dimensionInfos
+	f	Lorg/valkyrienskies/core/impl/shadow/DW;	B	connectivityHandler
+	f	Lorg/valkyrienskies/core/impl/game/ships/ShipData$Factory;	C	shipDataFactory
+	f	Ljavax/inject/Provider;	D	todo_confirm_vsCoreProvider
+	f	Lorg/valkyrienskies/core/impl/shadow/Gi;	f	stageManager
+	f	Ljava/util/Set;	E	lastTickPlayers
+	f	Ljava/util/Set;	F	players
+	f	Lorg/valkyrienskies/core/internal/VsiGameServer;	G	gameServer
+	f	J	H	todo_field_6242
+	f	Lorg/valkyrienskies/core/impl/shadow/Eo;	I	loadedShips
+	f	Ljava/util/Map;	g	loadedPhysicsEntities
+	f	Ljava/util/Map;	h	dimensionToGroundBodyId
+	f	Ljava/util/ArrayList;	i	dimensionsAddedThisTick
+	f	Ljava/util/ArrayList;	j	dimensionsRemovedThisTick
+	f	Ljava/util/ArrayList;	k	voxelShapeUpdatesList
+	f	Ljava/util/Set;	J	disabledCollisionPairs
+	f	Ljava/util/List;	l	newShipObjects
+	f	Ljava/util/List;	m	newPhysicsEntities
+	f	Ljava/util/List;	n	updatedShipObjects
+	f	Ljava/util/List;	o	updatedPhysicsEntities
+	f	Ljava/util/List;	p	deletedShipObjects
+	f	Ljava/util/List;	q	deletedPhysicsEntities
+	f	Ljava/util/List;	r	lastTickDeletedShipObjects
+	f	Ljava/util/List;	s	unused_jointsCreatedThisTick
+	f	Ljava/util/Map;	t	unused_joints
+	f	Ljava/util/List;	u	unused_jointsDeletedThisTick
+	f	Ljava/util/List;	v	unused_disabledCollisionPairsThisTick
+	f	Ljava/util/List;	w	unused_enabledCollisionPairsThisTick
+	f	Lorg/valkyrienskies/core/impl/shadow/Fj;	K	udpServer
+	f	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;	x	shipToVoxelUpdates
+	f	Lorg/valkyrienskies/core/impl/shadow/DL;	y	aerodynamicUtils
+	m	(Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;Lorg/valkyrienskies/core/impl/shadow/Ek;Lorg/valkyrienskies/core/impl/game/ChunkAllocatorProvider;Lorg/valkyrienskies/core/impl/shadow/EB;Lorg/valkyrienskies/core/impl/shadow/Fl;Lorg/valkyrienskies/core/impl/shadow/DN;Ljava/util/Map;Lorg/valkyrienskies/core/impl/shadow/DW;Lorg/valkyrienskies/core/impl/game/ships/ShipData$Factory;Ljavax/inject/Provider;)V	<init>	<init>
 	m	()Lorg/valkyrienskies/core/internal/ships/VsiMutableQueryableShipData;	a	getAllShips
-	m	()Lorg/valkyrienskies/core/impl/game/ChunkAllocatorProvider;	b	getChunkAllocatorProvider
-	m	()Lorg/valkyrienskies/core/impl/program/VSCoreInternal;	k	getVSCore
-	m	()Ljava/util/Set;	l	getLastTickPlayers
-	m	()Lcom/google/common/collect/ImmutableMap;	c	getPlayersToTrackedShips
-	m	()Lcom/google/common/collect/ImmutableMap;	d	getPlayersToTrackedPhysicsEntities
-	m	()Ljava/util/Map;	e	getLoadedPhysicsEntities
-	m	()Ljava/util/Map;	f	getDimensionInfos
-	m	()Lorg/valkyrienskies/core/impl/shadow/DL;	g	getAerodynamicUtils
-	m	()V	h	postTick
+	m	()Lorg/valkyrienskies/core/impl/shadow/Ek;	b	getJointManager
+	m	()Lorg/valkyrienskies/core/impl/game/ChunkAllocatorProvider;	c	getChunkAllocatorProvider
+	m	()Lorg/valkyrienskies/core/impl/program/VSCoreInternal;	l	getVSCore
+	m	()Ljava/util/Set;	m	getLastTickPlayers
+	m	()Lcom/google/common/collect/ImmutableMap;	d	getPlayersToTrackedShips
+	m	()Lcom/google/common/collect/ImmutableMap;	e	getPlayersToTrackedPhysicsEntities
+	m	()Ljava/util/Map;	f	getLoadedPhysicsEntities
+	m	()Ljava/util/Map;	g	getDimensionInfos
+	m	()Lorg/valkyrienskies/core/impl/shadow/DL;	h	getAerodynamicUtils
+	m	()V	i	postTick
 	m	(Lorg/joml/Vector3ic;ZDLjava/lang/String;)Ljava/util/concurrent/CompletableFuture;	a	createShipAtBlockAsync
 	m	(Lorg/joml/Vector3ic;ZDLjava/lang/String;)Lorg/valkyrienskies/core/impl/game/ships/ShipData;	b	createShipAtBlock
 
-c	org/valkyrienskies/core/impl/shadow/Er$b	org/valkyrienskies/core/impl/game/ships/ShipObjectServerWorld$LevelVoxelUpdates
+c	org/valkyrienskies/core/impl/shadow/Et$b	org/valkyrienskies/core/impl/game/ships/ShipObjectServerWorld$LevelVoxelUpdates
 	f	Ljava/lang/String;	a	dimensionId
 	f	Ljava/util/List;	b	updates
 	m	()Ljava/lang/String;	a	getDimensionId
 	m	()Ljava/util/List;	b	getUpdates
 
-c	org/valkyrienskies/core/impl/shadow/Et	org/valkyrienskies/core/impl/game/ships/ShipObjectWorld
+c	org/valkyrienskies/core/impl/shadow/Ev	org/valkyrienskies/core/impl/game/ships/ShipObjectWorld
 
 c	org/valkyrienskies/core/impl/shadow/Eh	org/valkyrienskies/core/impl/game/ships/DragManager
 
-c	org/valkyrienskies/core/impl/shadow/EW	org/valkyrienskies/core/impl/networking/NetworkChannel
+c	org/valkyrienskies/core/impl/shadow/Fb	org/valkyrienskies/core/impl/networking/NetworkChannel
 
-c	org/valkyrienskies/core/impl/shadow/Ew	org/valkyrienskies/core/impl/game/ships/WingManager
+c	org/valkyrienskies/core/impl/shadow/Ey	org/valkyrienskies/core/impl/game/ships/WingManager
 
-c	org/valkyrienskies/core/impl/shadow/EY	org/valkyrienskies/core/impl/networking/PacketType
+c	org/valkyrienskies/core/impl/shadow/Fd	org/valkyrienskies/core/impl/networking/PacketType
 
-c	org/valkyrienskies/core/impl/shadow/Ez	org/valkyrienskies/core/impl/todo/LoadManager
+c	org/valkyrienskies/core/impl/shadow/Gi	org/valkyrienskies/core/impl/todo/StageManager
 
-c	org/valkyrienskies/core/impl/shadow/FH	org/valkyrienskies/core/impl/pipelines/VSPhysicsPipelineStage
+c	org/valkyrienskies/core/impl/shadow/EB	org/valkyrienskies/core/impl/todo/LoadManager
 
-c	org/valkyrienskies/core/impl/shadow/Fi	org/valkyrienskies/core/impl/networking/VSNetworking
-	f	Lorg/valkyrienskies/core/impl/shadow/EW;	a	udp
-	f	Lorg/valkyrienskies/core/impl/shadow/EW;	b	tcp
+c	org/valkyrienskies/core/impl/shadow/FN	org/valkyrienskies/core/impl/pipelines/VSPhysicsPipelineStage
+
+c	org/valkyrienskies/core/impl/shadow/Fj	org/valkyrienskies/core/impl/todo/UDPServer
+
+c	org/valkyrienskies/core/impl/shadow/Fl	org/valkyrienskies/core/impl/networking/VSNetworking
+	f	Lorg/valkyrienskies/core/impl/shadow/Fb;	a	udp
+	f	Lorg/valkyrienskies/core/impl/shadow/Fb;	b	tcp
 	f	Lorg/valkyrienskies/core/impl/networking/simple/SimplePacketNetworking;	c	simplePackets
-	f	Lorg/valkyrienskies/core/impl/shadow/EY;	h	tcp_udp_fallback
+	f	Lorg/valkyrienskies/core/impl/shadow/Fd;	h	tcp_udp_fallback
 	f	Z	d	clientUsesUDP
 	f	Z	e	serverUsesUDP
 	f	Lorg/valkyrienskies/core/api/event/RegisteredListener;	f	prevStateHandler
 
-c	org/valkyrienskies/core/impl/shadow/FM	org/valkyrienskies/core/impl/todo/VsPipelineImpl
+c	org/valkyrienskies/core/impl/shadow/He	org/valkyrienskies/physics_api/PhysicsWorldReference
 
-c	org/valkyrienskies/core/impl/shadow/FO	org/valkyrienskies/core/impl/todo/DummyPhysLevel
+c	org/valkyrienskies/core/impl/shadow/FQ	org/valkyrienskies/core/impl/todo/VsPipelineImpl
 
-c	org/valkyrienskies/core/impl/shadow/FQ	org/valkyrienskies/core/impl/todo/PhysLevelImpl
-	f	Ljava/lang/String;	f	dimensionId
-	f	Lorg/valkyrienskies/core/impl/shadow/GZ;	b	physWorldRef
-	f	Lkotlin/jvm/functions/Function0;	g	physShipsProvider
-	f	Lorg/valkyrienskies/core/impl/shadow/FJ;	h	pipeline
-	f	Lorg/valkyrienskies/core/impl/shadow/Er;	i	serverWorld
-	f	Lkotlin/jvm/functions/Function1;	j	physShipProvider
-	f	Ljava/util/Set;	k	disabledCollisionPairs
+c	org/valkyrienskies/core/impl/shadow/Ek	org/valkyrienskies/core/impl/game/ships/JointManager
+	f	Ljava/util/concurrent/ConcurrentHashMap;	c	id2joint
+	f	Ljava/util/concurrent/ConcurrentHashMap;	d	ship2joints
+	f	Ljava/util/concurrent/atomic/AtomicInteger;	b	idCounter
+
+c	org/valkyrienskies/core/impl/shadow/FS	org/valkyrienskies/core/impl/todo/DummyPhysLevel
+
+c	org/valkyrienskies/core/impl/shadow/FU	org/valkyrienskies/core/impl/todo/PhysLevelImpl
+	f	Ljava/lang/String;	g	dimensionId
+	f	Lorg/valkyrienskies/core/impl/shadow/He;	b	physWorldRef
+	f	Lkotlin/jvm/functions/Function0;	h	physShipsProvider
+	f	Lorg/valkyrienskies/core/impl/shadow/FN;	i	pipeline
+	f	Lorg/valkyrienskies/core/impl/shadow/Ek;	j	joints
+	f	Lorg/valkyrienskies/core/impl/shadow/Et;	k	serverWorld
+	f	Lkotlin/jvm/functions/Function1;	l	physShipProvider
+	f	Ljava/util/Set;	m	disabledCollisionPairs
 	f	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;	c	shipTodisabledCollisionPairs
-	f	Ljava/util/Map;	l	joints
-	f	Ljava/util/Map;	m	shipToJointIds
+	f	Ljava/util/Map;	n	joints
+	f	Ljava/util/Map;	o	shipToJointIds
 	f	Ljava/util/HashSet;	d	loadedShipIds
 	f	I	e	levelPhysId
-	m	()Ljava/util/Map;	j	getJoints
 
-c	org/valkyrienskies/core/impl/shadow/Fy	org/valkyrienskies/core/impl/todo/DisabledCollisionPair
+c	org/valkyrienskies/core/impl/shadow/FB	org/valkyrienskies/core/impl/todo/DisabledCollisionPair
 	f	J	b	ship0Id
 	f	J	c	ship1Id
 	m	()J	a	getShip0Id
 	m	()J	b	getShip1Id
-
-c	org/valkyrienskies/core/impl/shadow/Il	org/valkyrienskies/physics_api/voxel/updates/IVoxelShapeUpdate
-	m	()I	a	getRegionX
-	m	()I	b	getRegionY
-	m	()I	c	getRegionZ
-	m	()Lorg/valkyrienskies/core/impl/shadow/Ip;	d	getVoxelShapeUpdateType
-
-c	org/valkyrienskies/core/impl/shadow/Ip	org/valkyrienskies/physics_api/voxel/updates/VoxelShapeUpdateType
