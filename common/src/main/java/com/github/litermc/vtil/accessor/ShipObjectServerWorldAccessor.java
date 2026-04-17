@@ -11,6 +11,7 @@ public interface ShipObjectServerWorldAccessor {
 	static final String JDESC = "Lorg/valkyrienskies/core/impl/shadow/Et;";
 	static final String M_postTick = "i";
 
+	JointManagerAccessor vtil$getJointManager();
 	VsiMutableQueryableShipData<ShipData> vtil$getAllShips();
 	ImmutableMap<VsiPlayer, ImmutableSet<ServerShipInternal>> vtil$getPlayersToTrackedShips();
 }

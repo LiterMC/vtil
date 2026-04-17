@@ -142,6 +142,8 @@ c	org/valkyrienskies/core/impl/shadow/Ek	org/valkyrienskies/core/impl/game/ships
 	f	Ljava/util/concurrent/ConcurrentHashMap;	c	id2joint
 	f	Ljava/util/concurrent/ConcurrentHashMap;	d	ship2joints
 	f	Ljava/util/concurrent/atomic/AtomicInteger;	b	idCounter
+	m	(I)Lorg/valkyrienskies/core/internal/joints/VSJoint;	c	getJointById
+	m	(J)Ljava/util/Set;	b	getShipJoints
 
 c	org/valkyrienskies/core/impl/shadow/FS	org/valkyrienskies/core/impl/todo/DummyPhysLevel
 
@@ -150,11 +152,11 @@ c	org/valkyrienskies/core/impl/shadow/FU	org/valkyrienskies/core/impl/todo/PhysL
 	f	Lorg/valkyrienskies/core/impl/shadow/He;	b	physWorldRef
 	f	Lkotlin/jvm/functions/Function0;	h	physShipsProvider
 	f	Lorg/valkyrienskies/core/impl/shadow/FN;	i	pipeline
-	f	Lorg/valkyrienskies/core/impl/shadow/Ek;	j	joints
+	f	Lorg/valkyrienskies/core/impl/shadow/Ek;	j	jointManager
 	f	Lorg/valkyrienskies/core/impl/shadow/Et;	k	serverWorld
 	f	Lkotlin/jvm/functions/Function1;	l	physShipProvider
 	f	Ljava/util/Set;	m	disabledCollisionPairs
-	f	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;	c	shipTodisabledCollisionPairs
+	f	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;	c	shipToDisabledCollisionPairs
 	f	Ljava/util/Map;	n	joints
 	f	Ljava/util/Map;	o	shipToJointIds
 	f	Ljava/util/HashSet;	d	loadedShipIds

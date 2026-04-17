@@ -1,5 +1,6 @@
 package com.github.litermc.vtil.mixin.valkyrienskies.shadow;
 
+import com.github.litermc.vtil.accessor.JointManagerAccessor;
 import com.github.litermc.vtil.accessor.ShipObjectServerWorldAccessor;
 import com.github.litermc.vtil.api.assemble.ShipAllocator;
 import com.github.litermc.vtil.api.storage.ShipDataStorage;
@@ -7,11 +8,9 @@ import com.github.litermc.vtil.config.Config;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import org.valkyrienskies.core.api.ships.QueryableShipData;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.impl.api.ServerShipInternal;
 import org.valkyrienskies.core.impl.game.ships.ShipData;
-import org.valkyrienskies.core.internal.joints.VSJoint;
 import org.valkyrienskies.core.internal.ships.VsiMutableQueryableShipData;
 import org.valkyrienskies.core.internal.world.VsiPlayer;
 
@@ -25,11 +24,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 
 @Mixin(org.valkyrienskies.core.impl.shadow.Et.class)
 public abstract class MixinShipObjectServerWorld implements ShipObjectServerWorldAccessor {
@@ -39,6 +34,14 @@ public abstract class MixinShipObjectServerWorld implements ShipObjectServerWorl
 	@Override
 	public VsiMutableQueryableShipData<ShipData> vtil$getAllShips() {
 		return this.a();
+	}
+
+	@Shadow(remap = false)
+	protected abstract org.valkyrienskies.core.impl.shadow.Ek b();
+
+	@Override
+	public JointManagerAccessor vtil$getJointManager() {
+	    return (JointManagerAccessor) (Object) this.b();
 	}
 
 	@Shadow(remap = false)
@@ -93,6 +96,6 @@ public abstract class MixinShipObjectServerWorld implements ShipObjectServerWorl
 		final Iterable<ServerShip> ships,
 		final Operation<Iterator<ServerShip>> operation
 	) {
-		return new ShipAllocator.SafeShipIterator(operation.call(ships));
+		return new ShipAllocator.SafeShipIterator<>(operation.call(ships));
 	}
 }

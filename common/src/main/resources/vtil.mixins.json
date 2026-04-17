@@ -28,6 +28,7 @@
 		"valkyrienskies.MixinShipSelector",
 		"valkyrienskies.shadow.MixinAttachmentHolderImpl",
 		"valkyrienskies.shadow.MixinDragManager",
+		"valkyrienskies.shadow.MixinJointManager",
 		"valkyrienskies.shadow.MixinShipObjectServer",
 		"valkyrienskies.shadow.MixinShipObjectServerWorld"
 	],
